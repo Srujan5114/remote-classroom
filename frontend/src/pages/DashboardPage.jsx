@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 
 export default function DashboardPage() {
   let user = null;
-
   try {
     const storedUser = localStorage.getItem('user');
     user = storedUser ? JSON.parse(storedUser) : null;
@@ -27,9 +26,14 @@ export default function DashboardPage() {
             </Link>
 
             {user.role === 'teacher' && (
-              <Link to="/schedule-class">
-                <button style={{ marginLeft: '10px' }}>Schedule Class</button>
-              </Link>
+              <>
+                <Link to="/schedule-class">
+                  <button style={{ marginLeft: '10px' }}>Schedule Class</button>
+                </Link>
+                <Link to="/teacher-classes">
+                  <button style={{ marginLeft: '10px' }}>My Classes</button>
+                </Link>
+              </>
             )}
 
             {user.role === 'student' && (
