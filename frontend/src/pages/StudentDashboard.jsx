@@ -7,8 +7,7 @@ export default function StudentDashboard() {
   const [upcomingClasses, setUpcomingClasses] = useState([]);
   const [attendance, setAttendance] = useState([]);
   const [attendancePercent, setAttendancePercent] = useState(0);
-  const [totalClasses, setTotalClasses] = useState(0);
-
+  
   let user = null;
   try {
     user = JSON.parse(localStorage.getItem('user'));
@@ -33,8 +32,7 @@ export default function StudentDashboard() {
         new Date(cls.scheduledTime) > now
       );
       setUpcomingClasses(upcoming.slice(0, 3));
-      setTotalClasses(classesRes.data.length);
-
+      
       // Fetch attendance
       const attendRes = await getStudentAttendance(user.id);
       setAttendance(attendRes.data);
