@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { loginUser } from '../services/api';
+import '../App.css';
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -13,6 +15,8 @@ export default function LoginPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setError('');
     try {
       const response = await loginUser(formData);
       localStorage.setItem('token', response.data.token);
@@ -20,43 +24,57 @@ export default function LoginPage() {
       navigate('/dashboard');
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div style={{ maxWidth: '400px', margin: '100px auto', padding: '20px', border: '1px solid #ccc' }}>
-      <h2>Remote Classroom Login</h2>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+    <div className="auth-container">
+      <div className="auth-box">
+        <div className="auth-logo">
+          <h1>Remote Classroom</h1>
+          <p>Connecting rural colleges through technology</p>
+        </div>
 
-      <form onSubmit={handleSubmit}>
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          value={formData.email}
-          onChange={handleChange}
-          style={{ width: '100%', padding: '10px', marginBottom: '10px' }}
-          required
-        />
+        <h2>Welcome Back</h2>
 
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          value={formData.password}
-          onChange={handleChange}
-          style={{ width: '100%', padding: '10px', marginBottom: '10px' }}
-          required
-        />
+        {error && <div className="auth-error">{error}</div>}
 
-        <button type="submit" style={{ width: '100%', padding: '10px' }}>
-          Login
-        </button>
-      </form>
+        <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label>Email Address</label>
+            <input
+              type="email"
+              name="email"
+              placeholder="Enter your email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+            />
+          </div>
 
-      <p style={{ marginTop: '10px' }}>
-        Don&apos;t have an account? <Link to="/register">Register here</Link>
-      </p>
+          <div className="form-group">
+            <label>Password</label>
+            <input
+              type="password"
+              name="password"
+              placeholder="Enter your password"
+              value={formData.password}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <button type="submit" className="btn-primary" disabled={loading}>
+            {loading ? 'Signing in...' : 'Sign In'}
+          </button>
+        </form>
+
+        <div className="auth-footer">
+          Don't have an account? <Link to="/register">Register here</Link>
+        </div>
+      </div>
     </div>
   );
 }
