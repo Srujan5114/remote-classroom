@@ -1,173 +1,133 @@
 import React, { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { getClasses } from '../services/api';
+import '../App.css';
 
 export default function TeacherClassesPage() {
   const [classes, setClasses] = useState([]);
-  const [allClasses, setAllClasses] = useState([]);
   const [liveClass, setLiveClass] = useState(null);
+  const navigate = useNavigate();
 
   let user = null;
   try {
     user = JSON.parse(localStorage.getItem('user'));
-  } catch (error) {
-    console.error('Invalid user');
-  }
+  } catch (error) {}
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     const fetchMyClasses = async () => {
       try {
-        if (!user || !user.id) {
-          console.log('❌ No user logged in');
-          return;
-        }
-
+        if (!user || !user.id) return;
         const response = await getClasses();
-        console.log('✅ All classes fetched:', response.data);
-        setAllClasses(response.data);
-
-        console.log('👤 Current teacher user.id:', user.id);
-        console.log('👤 Current teacher user._id:', user._id);
-
-        // Try both user.id and user._id
         const myClasses = response.data.filter(cls => {
-          const teacherId = cls.teacher._id || cls.teacher.id;
-          const matches = teacherId === user.id || teacherId === user._id;
-          console.log(`📌 Class "${cls.title}" - Teacher ID: ${teacherId}, User ID: ${user.id}, Match: ${matches}`);
-          return matches;
+          const teacherId = cls.teacher?._id || cls.teacher?.id;
+          return teacherId === user.id || teacherId === user._id;
         });
-
-        console.log('🎯 Filtered my classes:', myClasses);
         setClasses(myClasses);
       } catch (error) {
-        console.error('❌ FETCH ERROR:', error);
+        console.error('FETCH ERROR:', error);
       }
     };
-
     fetchMyClasses();
   }, []);
 
   const handleStartClass = (classId, meetingLink) => {
     setLiveClass(classId);
     window.open(meetingLink, '_blank');
-    alert('✅ Class started! Joining meeting room...');
   };
 
-  const handleEndClass = (classId) => {
+  const handleEndClass = () => {
     setLiveClass(null);
-    alert('✅ Class ended');
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    navigate('/');
   };
 
   return (
-    <div style={{ padding: '20px', maxWidth: '1000px', margin: '0 auto' }}>
-      <h1>👨‍🏫 My Scheduled Classes</h1>
-
-      {user && (
-        <div style={{ background: '#fff3cd', padding: '10px', borderRadius: '8px', marginBottom: '20px' }}>
-          <p style={{ margin: '0' }}>👤 <strong>{user.name}</strong> (Teacher)</p>
-          <p style={{ margin: '5px 0 0 0', fontSize: '12px', color: '#666' }}>ID: {user.id}</p>
+    <div>
+      <nav className="navbar">
+        <span className="navbar-brand">Remote<span>Classroom</span></span>
+        <div className="navbar-links">
+          <Link to="/teacher-dashboard"><button>Dashboard</button></Link>
+          <Link to="/schedule"><button>Schedule Class</button></Link>
+          <button className="btn-logout" onClick={handleLogout}>Logout</button>
         </div>
-      )}
+      </nav>
 
-      <div style={{ background: '#f0f0f0', padding: '10px', borderRadius: '8px', marginBottom: '20px', fontSize: '12px' }}>
-        <p><strong>Debug Info:</strong></p>
-        <p>Total classes in system: {allClasses.length}</p>
-        <p>Your classes: {classes.length}</p>
-        <p>User logged in: {user ? 'Yes' : 'No'}</p>
-      </div>
-
-      {!user ? (
-        <p style={{ color: 'red' }}>❌ Please login first</p>
-      ) : classes.length === 0 ? (
-        <div>
-          <p style={{ color: '#666' }}>No classes scheduled yet. <a href="/schedule-class">Schedule now</a></p>
-          {allClasses.length > 0 && (
-            <div style={{ background: '#ffe6e6', padding: '10px', borderRadius: '8px', marginTop: '10px' }}>
-              <p><strong>⚠️ Note:</strong> There are {allClasses.length} classes in the system, but none match your teacher ID.</p>
-              <p>Check the console (F12) to see the comparison details.</p>
-            </div>
-          )}
+      <div className="page-container">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+          <h1 className="page-title" style={{ margin: 0 }}>My Scheduled Classes</h1>
+          <Link to="/schedule"><button className="btn btn-blue">+ Schedule New Class</button></Link>
         </div>
-      ) : (
-        <div>
-          {classes.map((cls) => (
+
+        {!user ? (
+          <div className="card"><p style={{ color: '#e63946' }}>Please login first.</p></div>
+        ) : classes.length === 0 ? (
+          <div className="card" style={{ textAlign: 'center', padding: '40px' }}>
+            <p style={{ color: '#888', fontSize: '16px', marginBottom: '16px' }}>No classes scheduled yet.</p>
+            <Link to="/schedule"><button className="btn btn-blue">Schedule Your First Class</button></Link>
+          </div>
+        ) : (
+          classes.map((cls) => (
             <div
               key={cls._id}
+              className="card"
               style={{
-                border: liveClass === cls._id ? '3px solid #28a745' : '1px solid #ddd',
-                padding: '20px',
-                marginBottom: '15px',
-                borderRadius: '12px',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                marginBottom: '16px',
+                border: liveClass === cls._id ? '2px solid #2dc653' : '1px solid #e9ecef',
                 background: liveClass === cls._id ? '#f0fff4' : 'white'
               }}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <div style={{ flex: 1 }}>
-                  <h3 style={{ margin: '0 0 10px 0' }}>{cls.title}</h3>
-                  <p><strong>📚 Course:</strong> {cls.course?.title}</p>
-                  <p><strong>🕐 Time:</strong> {new Date(cls.scheduledTime).toLocaleString()}</p>
-                  <p><strong>⏱️ Duration:</strong> {cls.duration} minutes</p>
-                  <p>
-                    <strong>📍 Status:</strong> 
-                    <span 
-                      style={{ 
-                        marginLeft: '10px',
-                        padding: '5px 10px',
-                        borderRadius: '5px',
-                        background: liveClass === cls._id ? '#28a745' : '#ffc107',
-                        color: 'white',
-                        fontWeight: 'bold'
-                      }}
-                    >
-                      {liveClass === cls._id ? '🔴 LIVE' : '⏱️ Scheduled'}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+                    <h3 style={{ margin: 0, color: '#1a1a2e' }}>{cls.title}</h3>
+                    <span className={`badge ${liveClass === cls._id ? 'badge-green' : 'badge-orange'}`}>
+                      {liveClass === cls._id ? 'LIVE' : 'Scheduled'}
                     </span>
+                  </div>
+                  <p style={{ margin: '0 0 6px 0', color: '#555', fontSize: '14px' }}>
+                    <strong>Course:</strong> {cls.course?.title}
                   </p>
-                  <p><strong>🔗 Meeting Link:</strong></p>
-                  <a href={cls.meetingLink} target="_blank" rel="noopener noreferrer" style={{color: '#007bff', wordBreak: 'break-all'}}>
-                    {cls.meetingLink}
-                  </a>
+                  <p style={{ margin: '0 0 6px 0', color: '#555', fontSize: '14px' }}>
+                    <strong>Time:</strong> {new Date(cls.scheduledTime).toLocaleString()}
+                  </p>
+                  <p style={{ margin: '0 0 6px 0', color: '#555', fontSize: '14px' }}>
+                    <strong>Duration:</strong> {cls.duration} minutes
+                  </p>
+                  {cls.meetingLink && (
+                    <p style={{ margin: 0, fontSize: '14px' }}>
+                      <strong>Meeting Link:</strong>{' '}
+                      <a href={cls.meetingLink} target="_blank" rel="noopener noreferrer" style={{ color: '#4361ee' }}>
+                        {cls.meetingLink}
+                      </a>
+                    </p>
+                  )}
                 </div>
                 <div style={{ marginLeft: '20px' }}>
                   {liveClass === cls._id ? (
                     <button
-                      onClick={() => handleEndClass(cls._id)}
-                      style={{
-                        padding: '12px 24px',
-                        background: '#dc3545',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '8px',
-                        cursor: 'pointer',
-                        fontSize: '16px',
-                        fontWeight: 'bold'
-                      }}
+                      onClick={() => handleEndClass()}
+                      className="btn btn-red"
                     >
-                      🛑 End Class
+                      End Class
                     </button>
                   ) : (
                     <button
                       onClick={() => handleStartClass(cls._id, cls.meetingLink)}
-                      style={{
-                        padding: '12px 24px',
-                        background: '#28a745',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '8px',
-                        cursor: 'pointer',
-                        fontSize: '16px',
-                        fontWeight: 'bold'
-                      }}
+                      className="btn btn-green"
                     >
-                      ▶️ Start Class
+                      Start Class
                     </button>
                   )}
                 </div>
               </div>
             </div>
-          ))}
-        </div>
-      )}
+          ))
+        )}
+      </div>
     </div>
   );
 }
