@@ -8,6 +8,11 @@ import ScheduleClassPage from './pages/ScheduleClassPage';
 import StudentClassesPage from './pages/StudentClassesPage';
 import TeacherClassesPage from './pages/TeacherClassesPage';
 import StudentDashboard from './pages/StudentDashboard';
+import AssignmentsPage from './pages/AssignmentsPage';
+import MaterialsPage from './pages/MaterialsPage';
+import NotificationsPage from './pages/NotificationsPage';
+import ChatPage from './pages/ChatPage';
+import TeacherDashboard from './pages/TeacherDashboard';
 
 function App() {
   return (
@@ -21,6 +26,11 @@ function App() {
         <Route path="/student-classes" element={<StudentClassesPage />} />
         <Route path="/teacher-classes" element={<TeacherClassesPage />} />
         <Route path="/student-dashboard" element={<StudentDashboard />} />
+        <Route path="/teacher-dashboard" element={<TeacherDashboard />} />
+        <Route path="/assignments" element={<AssignmentsPage />} />
+        <Route path="/materials" element={<MaterialsPage />} />
+        <Route path="/notifications" element={<NotificationsPage />} />
+        <Route path="/chat" element={<ChatPage />} />
       </Routes>
     </Router>
   );
