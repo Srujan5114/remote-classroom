@@ -37,9 +37,14 @@ export default function DashboardPage() {
             )}
 
             {user.role === 'student' && (
-              <Link to="/student-classes">
-                <button style={{ marginLeft: '10px' }}>View Classes</button>
-              </Link>
+              <>
+                <Link to="/student-dashboard">
+                  <button style={{ marginLeft: '10px' }}>My Dashboard</button>
+                </Link>
+                <Link to="/student-classes">
+                  <button style={{ marginLeft: '10px' }}>View Classes</button>
+                </Link>
+              </>
             )}
           </div>
         </>
