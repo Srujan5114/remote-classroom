@@ -20,15 +20,7 @@ export default function StudentClassesPage() {
   const fetchClasses = async () => {
     try {
       const response = await getClasses();
-      const now = new Date();
-      // Only show classes that have not ended yet
-      const activeClasses = response.data.filter(cls => {
-        const classEnd = new Date(
-          new Date(cls.scheduledTime).getTime() + cls.duration * 60000
-        );
-        return classEnd > now;
-      });
-      setClasses(activeClasses);
+      setClasses(response.data);
     } catch (error) {
       console.error('FETCH CLASSES ERROR:', error);
     }
@@ -48,10 +40,16 @@ export default function StudentClassesPage() {
 
     setLoading(true);
     try {
-      await markAttendance({ session: classId, student: user.id });
+      // Mark attendance with YOUR model fields (session, student)
+      await markAttendance({
+        session: classId,
+        student: user.id
+      });
+      // Add to marked list
       setMarkedClasses([...markedClasses, classId]);
+      // Open meeting
       window.open(meetingLink, '_blank');
-      alert('Attendance marked successfully!');
+      alert('Attendance marked successfully! Joining class...');
     } catch (error) {
       console.error('ATTENDANCE ERROR:', error);
       if (error.response?.data?.message?.includes('already marked')) {
@@ -59,6 +57,7 @@ export default function StudentClassesPage() {
       } else {
         alert(error.response?.data?.message || 'Failed to mark attendance');
       }
+      // Still open meeting even if attendance fails
       window.open(meetingLink, '_blank');
     } finally {
       setLoading(false);
@@ -71,12 +70,12 @@ export default function StudentClassesPage() {
 
       {user && (
         <div style={{ background: '#e7f3ff', padding: '10px', borderRadius: '8px', marginBottom: '20px' }}>
-          <p style={{ margin: 0 }}>Welcome, <strong>{user.name}</strong></p>
+          <p style={{ margin: 0 }}>Welcome, <strong>{user.name}</strong> ({user.role})</p>
         </div>
       )}
 
       {classes.length === 0 ? (
-        <p style={{ color: '#666' }}>No active classes available right now.</p>
+        <p>No classes scheduled yet</p>
       ) : (
         classes.map((cls) => (
           <div key={cls._id} style={{
@@ -92,6 +91,7 @@ export default function StudentClassesPage() {
             <p><strong>Teacher:</strong> {cls.teacher?.name || 'N/A'}</p>
             <p><strong>Time:</strong> {new Date(cls.scheduledTime).toLocaleString()}</p>
             <p><strong>Duration:</strong> {cls.duration} minutes</p>
+            <p><strong>Status:</strong> <span style={{ color: cls.status === 'live' ? 'green' : 'orange' }}>{cls.status}</span></p>
             <button
               onClick={() => handleJoinClass(cls._id, cls.meetingLink)}
               disabled={loading}
@@ -103,10 +103,11 @@ export default function StudentClassesPage() {
                 borderRadius: '8px',
                 cursor: loading ? 'not-allowed' : 'pointer',
                 fontSize: '16px',
-                fontWeight: 'bold'
+                fontWeight: 'bold',
+                marginLeft: '20px'
               }}
             >
-              {loading ? 'Joining...' : markedClasses.includes(cls._id) ? 'Attended' : 'Join Class (Mark Attendance)'}
+              {loading ? 'Joining...' : markedClasses.includes(cls._id) ? 'Attended' : 'Join & Mark'}
             </button>
           </div>
         ))
