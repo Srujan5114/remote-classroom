@@ -18,14 +18,9 @@ exports.createClassSession = async (req, res) => {
     });
 
     await newClass.save();
-
-    return res.status(201).json({
-      message: 'Class scheduled successfully',
-      classSession: newClass
-    });
+    res.status(201).json(newClass);
   } catch (error) {
-    console.error('CREATE CLASS ERROR:', error);
-    return res.status(500).json({ message: error.message });
+    res.status(500).json({ message: 'Server error', error });
   }
 };
 
@@ -33,12 +28,30 @@ exports.getAllClassSessions = async (req, res) => {
   try {
     const classes = await ClassSession.find()
       .populate('course', 'title')
-      .populate('teacher', 'name email role')
-      .sort({ scheduledTime: 1 });
-
-    return res.status(200).json(classes);
+      .populate('teacher', 'name email');
+    res.json(classes);
   } catch (error) {
-    console.error('GET CLASSES ERROR:', error);
-    return res.status(500).json({ message: error.message });
+    res.status(500).json({ message: 'Server error', error });
+  }
+};
+
+exports.updateClassSession = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { scheduledTime, duration, title, meetingLink } = req.body;
+
+    const updatedClass = await ClassSession.findByIdAndUpdate(
+      id,
+      { scheduledTime, duration, title, meetingLink },
+      { new: true }
+    ).populate('course', 'title').populate('teacher', 'name email');
+
+    if (!updatedClass) {
+      return res.status(404).json({ message: 'Class not found' });
+    }
+
+    res.json(updatedClass);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error });
   }
 };
