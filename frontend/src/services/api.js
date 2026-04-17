@@ -18,6 +18,7 @@ export const getCourses = () => api.get('/courses');
 export const createCourse = (data) => api.post('/courses', data);
 export const getClasses = () => api.get('/classes');
 export const createClass = (data) => api.post('/classes', data);
+export const updateClass = (id, data) => api.put(`/classes/${id}`, data);
 export const markAttendance = (data) => api.post('/attendance', data);
 export const getStudentAttendance = (studentId) => api.get(`/attendance/student/${studentId}`);
 export const getSessionAttendance = (sessionId) => api.get(`/attendance/session/${sessionId}`);
