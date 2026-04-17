@@ -6,22 +6,23 @@ import '../App.css';
 export default function TeacherClassesPage() {
   const [classes, setClasses] = useState([]);
   const [liveClass, setLiveClass] = useState(null);
+  const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
-  let user = null;
-  try {
-    user = JSON.parse(localStorage.getItem('user'));
-  } catch (error) {}
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
+    let parsedUser = null;
+    try {
+      parsedUser = JSON.parse(localStorage.getItem('user'));
+    } catch (error) {}
+    setUser(parsedUser);
+
     const fetchMyClasses = async () => {
       try {
-        if (!user || !user.id) return;
+        if (!parsedUser || !parsedUser.id) return;
         const response = await getClasses();
         const myClasses = response.data.filter(cls => {
           const teacherId = cls.teacher?._id || cls.teacher?.id;
-          return teacherId === user.id || teacherId === user._id;
+          return teacherId === parsedUser.id || teacherId === parsedUser._id;
         });
         setClasses(myClasses);
       } catch (error) {
@@ -108,17 +109,11 @@ export default function TeacherClassesPage() {
                 </div>
                 <div style={{ marginLeft: '20px' }}>
                   {liveClass === cls._id ? (
-                    <button
-                      onClick={() => handleEndClass()}
-                      className="btn btn-red"
-                    >
+                    <button onClick={() => handleEndClass()} className="btn btn-red">
                       End Class
                     </button>
                   ) : (
-                    <button
-                      onClick={() => handleStartClass(cls._id, cls.meetingLink)}
-                      className="btn btn-green"
-                    >
+                    <button onClick={() => handleStartClass(cls._id, cls.meetingLink)} className="btn btn-green">
                       Start Class
                     </button>
                   )}
