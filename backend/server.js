@@ -7,6 +7,7 @@ require('dotenv').config();
 
 const app = express();
 const server = http.createServer(app);
+
 const io = new Server(server, {
   cors: { origin: '*', methods: ['GET', 'POST'] }
 });
@@ -14,11 +15,12 @@ const io = new Server(server, {
 app.use(cors());
 app.use(express.json());
 
+app.set('io', io);
+
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/remote-classroom')
   .then(() => console.log('MongoDB connected'))
   .catch((err) => console.log(err));
 
-// Routes
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/courses', require('./routes/courses'));
 app.use('/api/classes', require('./routes/classes'));
@@ -32,17 +34,12 @@ app.get('/', (req, res) => {
   res.send('Backend is running');
 });
 
-// Socket.io for real-time chat
 io.on('connection', (socket) => {
   console.log('User connected:', socket.id);
 
-  socket.on('joinRoom', (roomId) => {
-    socket.join(roomId);
-    console.log(`User ${socket.id} joined room ${roomId}`);
-  });
-
-  socket.on('sendMessage', (data) => {
-    io.to(data.room).emit('receiveMessage', data);
+  socket.on('joinRoom', (courseId) => {
+    socket.join(courseId);
+    console.log(`User ${socket.id} joined room ${courseId}`);
   });
 
   socket.on('disconnect', () => {
