@@ -39,7 +39,6 @@ const ChatPage = () => {
     if (!selectedCourse) return;
     socketRef.current.emit('joinRoom', selectedCourse._id);
     fetchMessages(selectedCourse._id);
-
     socketRef.current.off('receiveMessage');
     socketRef.current.on('receiveMessage', (data) => {
       setMessages(prev => [...prev, data]);
@@ -49,7 +48,7 @@ const ChatPage = () => {
   const fetchMessages = async (courseId) => {
     setLoading(true);
     try {
-      const res = await axios.get(`http://localhost:5000/api/chat/${courseId}`, {
+      const res = await axios.get(`http://localhost:5000/api/chat?courseId=${courseId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setMessages(res.data);
@@ -75,7 +74,10 @@ const ChatPage = () => {
       createdAt: new Date().toISOString()
     };
     try {
-      await axios.post('http://localhost:5000/api/chat', { courseId: selectedCourse._id, content: newMessage }, {
+      await axios.post('http://localhost:5000/api/chat', {
+        course: selectedCourse._id,
+        message: newMessage
+      }, {
         headers: { Authorization: `Bearer ${token}` }
       });
       socketRef.current.emit('sendMessage', msgData);
@@ -115,7 +117,6 @@ const ChatPage = () => {
           <button onClick={() => window.history.back()} style={{ width: '100%', padding: '0.7rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff', cursor: 'pointer', fontSize: '0.9rem' }}>Back to Dashboard</button>
         </div>
       </div>
-
       {/* Chat Area */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
         {!selectedCourse ? (
@@ -134,7 +135,6 @@ const ChatPage = () => {
                 <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem' }}>Group Chat</p>
               </div>
             </div>
-
             {/* Messages */}
             <div style={{ flex: 1, overflowY: 'auto', padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
               {loading ? (
@@ -146,16 +146,18 @@ const ChatPage = () => {
                 </div>
               ) : (
                 messages.map((msg, idx) => {
-                  const isOwn = msg.senderId === (user._id || user.id) || msg.sender === (user.name || user.email);
+                  const senderId = msg.sender?._id || msg.sender;
+                  const isOwn = senderId === (user._id || user.id);
+                  const senderName = msg.sender?.name || msg.senderName || msg.sender;
                   return (
                     <div key={idx} style={{ display: 'flex', justifyContent: isOwn ? 'flex-end' : 'flex-start', gap: '0.7rem', alignItems: 'flex-end' }}>
                       {!isOwn && (
-                        <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'linear-gradient(135deg, #f093fb, #f5576c)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.85rem', fontWeight: 700, flexShrink: 0 }}>{(msg.sender || 'U')?.charAt(0).toUpperCase()}</div>
+                        <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'linear-gradient(135deg, #f093fb, #f5576c)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.85rem', fontWeight: 700, flexShrink: 0 }}>{(senderName || 'U')?.charAt(0).toUpperCase()}</div>
                       )}
                       <div style={{ maxWidth: '65%' }}>
-                        {!isOwn && <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)', marginBottom: '0.3rem', paddingLeft: '0.3rem' }}>{msg.sender}</div>}
+                        {!isOwn && <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)', marginBottom: '0.3rem', paddingLeft: '0.3rem' }}>{senderName}</div>}
                         <div style={{ padding: '0.7rem 1rem', borderRadius: isOwn ? '16px 16px 4px 16px' : '16px 16px 16px 4px', background: isOwn ? 'linear-gradient(135deg, #667eea, #764ba2)' : 'rgba(255,255,255,0.1)', boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }}>
-                          <p style={{ margin: 0, lineHeight: 1.4, fontSize: '0.9rem' }}>{msg.content}</p>
+                          <p style={{ margin: 0, lineHeight: 1.4, fontSize: '0.9rem' }}>{msg.message || msg.content}</p>
                         </div>
                         <div style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.3)', textAlign: isOwn ? 'right' : 'left', marginTop: '0.2rem', paddingLeft: '0.3rem', paddingRight: '0.3rem' }}>
                           {new Date(msg.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
@@ -167,7 +169,6 @@ const ChatPage = () => {
               )}
               <div ref={messagesEndRef} />
             </div>
-
             {/* Input */}
             <form onSubmit={sendMessage} style={{ padding: '1rem 1.5rem', borderTop: '1px solid rgba(255,255,255,0.1)', background: 'rgba(0,0,0,0.2)', display: 'flex', gap: '0.8rem' }}>
               <input value={newMessage} onChange={e => setNewMessage(e.target.value)} placeholder={`Message ${selectedCourse.name}...`}
