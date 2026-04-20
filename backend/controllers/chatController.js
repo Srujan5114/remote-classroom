@@ -32,11 +32,23 @@ exports.sendMessage = async (req, res) => {
       return res.status(401).json({ message: 'Unauthorized' });
     }
 
+    const senderId =
+      req.user._id ||
+      req.user.id ||
+      req.user.userId ||
+      req.user.user?._id ||
+      req.user.user?.id;
+
+    if (!senderId) {
+      console.error('sendMessage error: user ID missing from req.user', req.user);
+      return res.status(401).json({ message: 'User ID missing in token' });
+    }
+
     const chat = new Chat({
       course,
-      sender: req.user.id || req.user._id,
-      senderName: req.user.name,
-      senderRole: req.user.role,
+      sender: senderId,
+      senderName: req.user.name || req.user.user?.name || 'Unknown User',
+      senderRole: req.user.role || req.user.user?.role || 'student',
       message: message.trim()
     });
 
@@ -53,6 +65,6 @@ exports.sendMessage = async (req, res) => {
     res.status(201).json(populatedChat);
   } catch (err) {
     console.error('sendMessage error:', err);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
