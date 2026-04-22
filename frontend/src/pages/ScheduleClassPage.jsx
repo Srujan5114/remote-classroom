@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { createClass } from '../services/api';
-import '../App.css';
+import {
+  Box, AppBar, Toolbar, Typography, Button, Paper, TextField, MenuItem, CircularProgress, Stack, Alert
+} from '@mui/material';
+import EventIcon from '@mui/icons-material/Event';
+import SchoolIcon from '@mui/icons-material/School';
 
 export default function ScheduleClassPage() {
   const [courses, setCourses] = useState([]);
@@ -29,7 +33,7 @@ export default function ScheduleClassPage() {
         const res = await axios.get('http://localhost:5000/api/courses');
         setCourses(res.data);
       } catch (err) {
-        console.error(err);
+        // Optionally handle error
       }
     };
     fetchCourses();
@@ -63,92 +67,93 @@ export default function ScheduleClassPage() {
   };
 
   return (
-    <div>
-      <nav className="navbar">
-        <span className="navbar-brand">Remote<span>Classroom</span></span>
-        <div className="navbar-links">
-          <Link to="/teacher-dashboard"><button>Dashboard</button></Link>
-          <Link to="/teacher-classes"><button>My Classes</button></Link>
-          <button className="btn-logout" onClick={handleLogout}>Logout</button>
-        </div>
-      </nav>
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
+      <AppBar position="static" color="primary" elevation={2}>
+        <Toolbar sx={{ justifyContent: 'space-between' }}>
+          <Typography variant="h6" fontWeight={700} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <EventIcon sx={{ fontSize: 28 }} /> Schedule Class
+          </Typography>
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            <Button color="inherit" component={Link} to="/teacher-dashboard">Dashboard</Button>
+            <Button color="inherit" component={Link} to="/teacher-classes">My Classes</Button>
+            <Button color="error" variant="outlined" onClick={handleLogout}>Logout</Button>
+          </Box>
+        </Toolbar>
+      </AppBar>
 
-      <div className="page-container">
-        <div style={{ maxWidth: '600px', margin: '0 auto' }}>
-          <h1 className="page-title">Schedule a Class</h1>
-
-          <div className="form-card">
-            {success && (
-              <div style={{ background: '#d3f9d8', color: '#2b8a3e', padding: '12px 16px', borderRadius: '8px', marginBottom: '16px', border: '1px solid #b2f2bb' }}>
-                {success}
-              </div>
-            )}
-            {error && (
-              <div className="auth-error">{error}</div>
-            )}
-
+      <Box sx={{ maxWidth: 600, mx: 'auto', p: { xs: 2, md: 4 } }}>
+        <Typography variant="h4" fontWeight={700} mb={3} color="primary.dark">Schedule a Class</Typography>
+        <Paper sx={{ p: 4, borderRadius: 3, background: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(5px)' }}>
+          <Stack spacing={2}>
+            {success && <Alert severity="success">{success}</Alert>}
+            {error && <Alert severity="error">{error}</Alert>}
             <form onSubmit={handleSubmit}>
-              <div className="form-group">
-                <label>Course</label>
-                <select name="course" value={form.course} onChange={handleChange} required>
-                  <option value="">Select a course</option>
+              <Stack spacing={2}>
+                <TextField
+                  select
+                  label="Course"
+                  name="course"
+                  value={form.course}
+                  onChange={handleChange}
+                  required
+                  fullWidth
+                >
+                  <MenuItem value="">Select a course</MenuItem>
                   {courses.map(c => (
-                    <option key={c._id} value={c._id}>{c.title}</option>
+                    <MenuItem key={c._id} value={c._id}>{c.title}</MenuItem>
                   ))}
-                </select>
-              </div>
-
-              <div className="form-group">
-                <label>Class Title</label>
-                <input
+                </TextField>
+                <TextField
+                  label="Class Title"
                   name="title"
-                  placeholder="Enter class title"
                   value={form.title}
                   onChange={handleChange}
                   required
+                  fullWidth
                 />
-              </div>
-
-              <div className="form-group">
-                <label>Scheduled Date & Time</label>
-                <input
-                  type="datetime-local"
+                <TextField
+                  label="Scheduled Time"
                   name="scheduledTime"
+                  type="datetime-local"
                   value={form.scheduledTime}
                   onChange={handleChange}
+                  InputLabelProps={{ shrink: true }}
                   required
+                  fullWidth
                 />
-              </div>
-
-              <div className="form-group">
-                <label>Duration (minutes)</label>
-                <input
-                  type="number"
+                <TextField
+                  label="Duration (minutes)"
                   name="duration"
-                  placeholder="e.g. 60"
+                  type="number"
                   value={form.duration}
                   onChange={handleChange}
                   required
+                  fullWidth
                 />
-              </div>
-
-              <div className="form-group">
-                <label>Meeting Link (Google Meet / Zoom)</label>
-                <input
+                <TextField
+                  label="Meeting Link"
                   name="meetingLink"
-                  placeholder="https://meet.google.com/..."
                   value={form.meetingLink}
                   onChange={handleChange}
+                  required
+                  fullWidth
+                  placeholder="https://meet.example.com/..."
                 />
-              </div>
-
-              <button type="submit" className="btn-primary" disabled={loading}>
-                {loading ? 'Scheduling...' : 'Schedule Class'}
-              </button>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  fullWidth
+                  disabled={loading}
+                  startIcon={loading && <CircularProgress size={18} color="inherit" />}
+                >
+                  {loading ? 'Scheduling...' : 'Schedule Class'}
+                </Button>
+              </Stack>
             </form>
-          </div>
-        </div>
-      </div>
-    </div>
+          </Stack>
+        </Paper>
+      </Box>
+    </Box>
   );
 }

@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import { registerUser } from '../services/api';
 import { useNavigate, Link } from 'react-router-dom';
-import '../App.css';
+import {
+  Box, Button, TextField, Typography, Paper, Alert, CircularProgress, Stack, MenuItem, Select, InputLabel, FormControl
+} from '@mui/material';
+import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
 
 export default function RegisterPage() {
   const [form, setForm] = useState({ name: '', email: '', password: '', role: 'student', college: '' });
@@ -30,56 +33,88 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="auth-container">
-      <div className="auth-box">
-        <div className="auth-logo">
-          <h1>Remote Classroom</h1>
-          <p>Create your account to get started</p>
-        </div>
-
-        <h2>Create Account</h2>
-
-        {error && <div className="auth-error">{error}</div>}
-
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label>Full Name</label>
-            <input name="name" placeholder="Enter your full name" value={form.name} onChange={handleChange} required />
-          </div>
-
-          <div className="form-group">
-            <label>Email Address</label>
-            <input type="email" name="email" placeholder="Enter your email" value={form.email} onChange={handleChange} required />
-          </div>
-
-          <div className="form-group">
-            <label>Password</label>
-            <input type="password" name="password" placeholder="Create a password" value={form.password} onChange={handleChange} required />
-          </div>
-
-          <div className="form-group">
-            <label>Role</label>
-            <select name="role" value={form.role} onChange={handleChange}>
-              <option value="student">Student</option>
-              <option value="teacher">Teacher</option>
-              <option value="admin">Admin</option>
-            </select>
-          </div>
-
-          <div className="form-group">
-            <label>College Name</label>
-            <input name="college" placeholder="Enter your college name" value={form.college} onChange={handleChange} required />
-          </div>
-
-          <button type="submit" className="btn-primary" disabled={loading}>
-            {loading ? 'Creating account...' : 'Create Account'}
-          </button>
-        </form>
-
-        <div className="auth-footer">
-          Already have an account? <Link to="/">Sign in here</Link>
-        </div>
-      </div>
-    </div>
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <Paper elevation={6} sx={{ p: 4, maxWidth: 420, width: '100%', borderRadius: 3, backdropFilter: 'blur(6px)' }}>
+        <Stack spacing={2} alignItems="center">
+          <PersonAddAltIcon color="primary" sx={{ fontSize: 40 }} />
+          <Typography variant="h5" fontWeight={700}>Create Account</Typography>
+          <Typography color="text.secondary" fontSize={14} align="center">
+            Create your account to get started
+          </Typography>
+          {error && <Alert severity="error" sx={{ width: '100%' }}>{error}</Alert>}
+          <Box component="form" onSubmit={handleSubmit} sx={{ width: '100%' }}>
+            <TextField
+              label="Full Name"
+              name="name"
+              value={form.name}
+              onChange={handleChange}
+              fullWidth
+              margin="normal"
+              required
+            />
+            <TextField
+              label="Email Address"
+              name="email"
+              type="email"
+              value={form.email}
+              onChange={handleChange}
+              fullWidth
+              margin="normal"
+              required
+            />
+            <TextField
+              label="Password"
+              name="password"
+              type="password"
+              value={form.password}
+              onChange={handleChange}
+              fullWidth
+              margin="normal"
+              required
+            />
+            <FormControl fullWidth margin="normal">
+              <InputLabel id="role-label">Role</InputLabel>
+              <Select
+                labelId="role-label"
+                label="Role"
+                name="role"
+                value={form.role}
+                onChange={handleChange}
+              >
+                <MenuItem value="student">Student</MenuItem>
+                <MenuItem value="teacher">Teacher</MenuItem>
+                <MenuItem value="admin">Admin</MenuItem>
+              </Select>
+            </FormControl>
+            <TextField
+              label="College Name"
+              name="college"
+              value={form.college}
+              onChange={handleChange}
+              fullWidth
+              margin="normal"
+              required
+            />
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              fullWidth
+              sx={{ mt: 2, mb: 1 }}
+              disabled={loading}
+              startIcon={loading && <CircularProgress size={18} color="inherit" />}
+            >
+              {loading ? 'Creating account...' : 'Create Account'}
+            </Button>
+          </Box>
+          <Typography variant="body2" color="text.secondary">
+            Already have an account?{' '}
+            <Link to="/" style={{ color: '#0f4c81', textDecoration: 'none', fontWeight: 700 }}>
+              Sign in here
+            </Link>
+          </Typography>
+        </Stack>
+      </Paper>
+    </Box>
   );
 }

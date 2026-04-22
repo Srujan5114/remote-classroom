@@ -1,7 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { getCourses, getClasses, getStudentAttendance } from '../services/api';
-import '../App.css';
+import {
+  Box, AppBar, Toolbar, Typography, Button, Paper, Grid, Card, CardContent, Stack, Chip, Avatar
+} from '@mui/material';
+import SchoolIcon from '@mui/icons-material/School';
+import EventIcon from '@mui/icons-material/Event';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 
 export default function StudentDashboard() {
   const [courses, setCourses] = useState([]);
@@ -36,7 +42,7 @@ export default function StudentDashboard() {
         setAttendancePercent(percent);
       }
     } catch (error) {
-      console.error('FETCH ERROR:', error);
+      // Optionally handle error
     }
   };
 
@@ -46,116 +52,132 @@ export default function StudentDashboard() {
   };
 
   return (
-    <div>
-      {/* Navbar */}
-      <nav className="navbar">
-        <span className="navbar-brand">Remote<span>Classroom</span></span>
-        <div className="navbar-links">
-          <Link to="/student-classes"><button>My Classes</button></Link>
-          <Link to="/courses"><button>Courses</button></Link>
-          <button className="btn-logout" onClick={handleLogout}>Logout</button>
-        </div>
-      </nav>
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
+      <AppBar position="static" color="primary" elevation={2}>
+        <Toolbar sx={{ justifyContent: 'space-between' }}>
+          <Typography variant="h6" fontWeight={700} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <SchoolIcon sx={{ fontSize: 28 }} /> Student Dashboard
+          </Typography>
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            <Button color="inherit" component={Link} to="/student-classes">My Classes</Button>
+            <Button color="inherit" component={Link} to="/courses">Courses</Button>
+            <Button color="error" variant="outlined" onClick={handleLogout}>Logout</Button>
+          </Box>
+        </Toolbar>
+      </AppBar>
 
-      <div className="page-container">
+      <Box sx={{ maxWidth: 1100, mx: 'auto', p: { xs: 2, md: 4 } }}>
         {/* Header Banner */}
-        <div style={{ background: 'linear-gradient(135deg, #1a1a2e, #16213e)', color: 'white', padding: '28px', borderRadius: '16px', marginBottom: '28px' }}>
-          <h1 style={{ margin: 0, fontSize: '26px' }}>Student Dashboard</h1>
-          <p style={{ margin: '6px 0 0 0', opacity: 0.85 }}>Welcome back, {user?.name}</p>
-          <p style={{ margin: '3px 0 0 0', opacity: 0.6, fontSize: '13px' }}>{user?.email} &bull; {user?.college}</p>
-        </div>
+        <Paper sx={{ background: 'linear-gradient(130deg, #0d3e6a 0%, #0f4c81 54%, #ff7a18 140%)', color: 'white', p: 4, borderRadius: 3, mb: 4 }}>
+          <Stack direction="row" spacing={3} alignItems="center">
+            <Avatar sx={{ bgcolor: 'secondary.main', width: 56, height: 56, fontSize: 28 }}>
+              {user?.name?.charAt(0)}
+            </Avatar>
+            <Box>
+              <Typography variant="h5" fontWeight={700}>Welcome back, {user?.name}</Typography>
+              <Typography color="rgba(255,255,255,0.85)" fontSize={15}>{user?.email} &bull; {user?.college}</Typography>
+            </Box>
+          </Stack>
+        </Paper>
 
         {/* Stat Cards */}
-        <div className="stat-cards">
-          <div className="stat-card">
-            <h2 style={{ color: '#4361ee' }}>{courses.length}</h2>
-            <p>Total Courses</p>
-          </div>
-          <div className="stat-card" style={{ borderTopColor: '#2dc653' }}>
-            <h2 style={{ color: '#2dc653' }}>{attendance.length}</h2>
-            <p>Classes Attended</p>
-          </div>
-          <div className="stat-card" style={{ borderTopColor: '#f77f00' }}>
-            <h2 style={{ color: '#f77f00' }}>{upcomingClasses.length}</h2>
-            <p>Upcoming Classes</p>
-          </div>
-          <div className="stat-card" style={{ borderTopColor: attendancePercent >= 75 ? '#2dc653' : '#e63946' }}>
-            <h2 style={{ color: attendancePercent >= 75 ? '#2dc653' : '#e63946' }}>{attendancePercent}%</h2>
-            <p>Attendance</p>
-          </div>
-        </div>
+        <Grid container spacing={3} mb={4}>
+          <Grid item xs={12} sm={6} md={3}>
+            <Card sx={{ borderTop: '4px solid', borderColor: 'primary.main', borderRadius: 2 }}>
+              <CardContent>
+                <Stack direction="row" spacing={1} alignItems="center">
+                  <SchoolIcon color="primary" />
+                  <Typography variant="h5" fontWeight={700}>{courses.length}</Typography>
+                </Stack>
+                <Typography color="text.secondary">Total Courses</Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <Card sx={{ borderTop: '4px solid', borderColor: 'success.main', borderRadius: 2 }}>
+              <CardContent>
+                <Stack direction="row" spacing={1} alignItems="center">
+                  <CheckCircleIcon sx={{ color: 'success.main' }} />
+                  <Typography variant="h5" fontWeight={700}>{attendance.length}</Typography>
+                </Stack>
+                <Typography color="text.secondary">Classes Attended</Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <Card sx={{ borderTop: '4px solid', borderColor: 'warning.main', borderRadius: 2 }}>
+              <CardContent>
+                <Stack direction="row" spacing={1} alignItems="center">
+                  <EventIcon sx={{ color: 'warning.main' }} />
+                  <Typography variant="h5" fontWeight={700}>{upcomingClasses.length}</Typography>
+                </Stack>
+                <Typography color="text.secondary">Upcoming Classes</Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <Card sx={{ borderTop: `4px solid ${attendancePercent >= 75 ? '#2dc653' : '#e63946'}`, borderRadius: 2 }}>
+              <CardContent>
+                <Stack direction="row" spacing={1} alignItems="center">
+                  <EmojiEventsIcon sx={{ color: attendancePercent >= 75 ? '#2dc653' : '#e63946' }} />
+                  <Typography variant="h5" fontWeight={700}>{attendancePercent}%</Typography>
+                </Stack>
+                <Typography color="text.secondary">Attendance</Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '24px' }}>
+        <Grid container spacing={3}>
           {/* Upcoming Classes */}
-          <div className="card">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-              <h3 style={{ margin: 0, color: '#1a1a2e' }}>Upcoming Classes</h3>
-              <Link to="/student-classes" style={{ color: '#4361ee', fontSize: '14px', fontWeight: 600 }}>View All</Link>
-            </div>
-            {upcomingClasses.length === 0 ? (
-              <p style={{ color: '#888' }}>No upcoming classes</p>
-            ) : (
-              upcomingClasses.map(cls => (
-                <div key={cls._id} style={{ borderLeft: '4px solid #4361ee', padding: '10px 14px', marginBottom: '10px', background: '#f8f9ff', borderRadius: '6px' }}>
-                  <p style={{ margin: '0 0 4px 0', fontWeight: 600 }}>{cls.title}</p>
-                  <p style={{ margin: '0 0 4px 0', fontSize: '13px', color: '#666' }}>Course: {cls.course?.title}</p>
-                  <p style={{ margin: 0, fontSize: '13px', color: '#4361ee' }}>{new Date(cls.scheduledTime).toLocaleString()}</p>
-                </div>
-              ))
-            )}
-          </div>
-
-          {/* Attendance History */}
-          <div className="card">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-              <h3 style={{ margin: 0, color: '#1a1a2e' }}>Attendance History</h3>
-              <span className={`badge ${attendancePercent >= 75 ? 'badge-green' : 'badge-red'}`}>{attendancePercent}%</span>
-            </div>
-            <div className="progress-bar-bg">
-              <div className="progress-bar-fill" style={{ width: `${attendancePercent}%`, background: attendancePercent >= 75 ? '#2dc653' : '#e63946' }} />
-            </div>
-            {attendance.length === 0 ? (
-              <p style={{ color: '#888', marginTop: '12px' }}>No attendance records yet</p>
-            ) : (
-              attendance.slice(0, 4).map((att, index) => (
-                <div key={index} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid #f0f2f5' }}>
-                  <p style={{ margin: 0, fontSize: '14px' }}>{att.session?.title || 'Class'}</p>
-                  <span className="badge badge-green">Present</span>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-
-        {/* My Courses */}
-        <div className="card" style={{ marginBottom: '24px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-            <h3 style={{ margin: 0, color: '#1a1a2e' }}>My Courses</h3>
-            <Link to="/courses" style={{ color: '#4361ee', fontSize: '14px', fontWeight: 600 }}>View All</Link>
-          </div>
-          {courses.length === 0 ? (
-            <p style={{ color: '#888' }}>No courses available</p>
-          ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '14px' }}>
-              {courses.slice(0, 4).map(course => (
-                <div key={course._id} style={{ border: '1px solid #e9ecef', borderRadius: '8px', padding: '14px', background: '#f8f9ff' }}>
-                  <p style={{ margin: '0 0 6px 0', fontWeight: 600, color: '#1a1a2e' }}>{course.title}</p>
-                  <p style={{ margin: 0, fontSize: '13px', color: '#666' }}>{course.description?.slice(0, 60)}...</p>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Quick Actions */}
-        <div className="card">
-          <h3 style={{ margin: '0 0 16px 0', color: '#1a1a2e' }}>Quick Actions</h3>
-          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-            <Link to="/student-classes"><button className="btn btn-blue">Join Live Class</button></Link>
-            <Link to="/courses"><button className="btn btn-green">Browse Courses</button></Link>
-          </div>
-        </div>
-      </div>
-    </div>
+          <Grid item xs={12} md={6}>
+            <Card>
+              <CardContent>
+                <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
+                  <Typography variant="h6" fontWeight={700}>Upcoming Classes</Typography>
+                  <Button component={Link} to="/student-classes" size="small" color="primary">View All</Button>
+                </Stack>
+                {upcomingClasses.length === 0 ? (
+                  <Typography color="text.secondary">No upcoming classes</Typography>
+                ) : (
+                  <Stack spacing={2}>
+                    {upcomingClasses.map(cls => (
+                      <Paper key={cls._id} sx={{ borderLeft: '4px solid', borderColor: 'primary.main', p: 2, bgcolor: '#f8f9ff' }}>
+                        <Typography fontWeight={600}>{cls.title}</Typography>
+                        <Typography color="text.secondary" fontSize={13}>
+                          {new Date(cls.scheduledTime).toLocaleString()}
+                        </Typography>
+                      </Paper>
+                    ))}
+                  </Stack>
+                )}
+              </CardContent>
+            </Card>
+          </Grid>
+          {/* Courses List */}
+          <Grid item xs={12} md={6}>
+            <Card>
+              <CardContent>
+                <Typography variant="h6" fontWeight={700} mb={2}>My Courses</Typography>
+                {courses.length === 0 ? (
+                  <Typography color="text.secondary">No courses enrolled</Typography>
+                ) : (
+                  <Stack spacing={2}>
+                    {courses.map(course => (
+                      <Paper key={course._id} sx={{ borderLeft: '4px solid', borderColor: 'primary.main', p: 2, bgcolor: '#f8f9ff' }}>
+                        <Typography fontWeight={600}>{course.title}</Typography>
+                        <Typography color="text.secondary" fontSize={13}>
+                          {course.description || 'No description'}
+                        </Typography>
+                      </Paper>
+                    ))}
+                  </Stack>
+                )}
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
+      </Box>
+    </Box>
   );
 }

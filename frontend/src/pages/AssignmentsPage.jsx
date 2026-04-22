@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import {
+  Box, AppBar, Toolbar, Typography, Button, Paper, Grid, Card, CardContent, Dialog, DialogTitle, DialogContent, DialogActions,
+  TextField, MenuItem, CircularProgress, Stack, Alert, Chip, IconButton
+} from '@mui/material';
+import AssignmentIcon from '@mui/icons-material/Assignment';
+import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 const AssignmentsPage = () => {
   const [assignments, setAssignments] = useState([]);
@@ -39,6 +46,7 @@ const AssignmentsPage = () => {
   useEffect(() => {
     fetchAssignments();
     if (isTeacher) fetchCourses();
+    // eslint-disable-next-line
   }, []);
 
   const handleSubmit = async (e) => {
@@ -68,93 +76,133 @@ const AssignmentsPage = () => {
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #0f0c29, #302b63, #24243e)', padding: '2rem', color: '#fff', fontFamily: 'Segoe UI, sans-serif' }}>
-      <div style={{ maxWidth: '900px', margin: '0 auto' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-          <div>
-            <h1 style={{ fontSize: '2rem', fontWeight: 700, marginBottom: '0.5rem' }}>Assignments</h1>
-            <p style={{ color: 'rgba(255,255,255,0.6)' }}>{isTeacher ? 'Manage your assignments' : 'View your assignments'}</p>
-          </div>
-          <div style={{ display: 'flex', gap: '1rem' }}>
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
+      <AppBar position="static" color="primary" elevation={2}>
+        <Toolbar sx={{ justifyContent: 'space-between' }}>
+          <Typography variant="h6" fontWeight={700} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <AssignmentIcon sx={{ fontSize: 28 }} /> Assignments
+          </Typography>
+          <Box>
             {isTeacher && (
-              <button onClick={() => setShowForm(!showForm)} style={{ padding: '0.7rem 1.5rem', background: 'linear-gradient(135deg, #667eea, #764ba2)', border: 'none', borderRadius: '8px', color: '#fff', cursor: 'pointer', fontWeight: 600 }}>
-                {showForm ? 'Cancel' : '+ New Assignment'}
-              </button>
+              <Button
+                variant="contained"
+                startIcon={<AddIcon />}
+                onClick={() => setShowForm(true)}
+                color="secondary"
+                sx={{ mr: 2 }}
+              >
+                New Assignment
+              </Button>
             )}
-            <button onClick={() => window.history.back()} style={{ padding: '0.7rem 1.5rem', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '8px', color: '#fff', cursor: 'pointer' }}>
-              Back
-            </button>
-          </div>
-        </div>
+          </Box>
+        </Toolbar>
+      </AppBar>
 
-        {error && <div style={{ background: 'rgba(255,100,100,0.2)', border: '1px solid rgba(255,100,100,0.4)', borderRadius: '8px', padding: '1rem', marginBottom: '1rem', color: '#ff6b6b' }}>{error}</div>}
+      <Box sx={{ maxWidth: 900, mx: 'auto', p: { xs: 2, md: 4 } }}>
+        <Typography variant="h4" fontWeight={700} color="primary.dark" sx={{ mb: 2 }}>
+          Assignment Board
+        </Typography>
+        {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
-        {showForm && (
-          <div style={{ background: 'rgba(255,255,255,0.05)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', padding: '2rem', marginBottom: '2rem' }}>
-            <h2 style={{ marginBottom: '1.5rem', fontSize: '1.3rem' }}>Create New Assignment</h2>
-            <form onSubmit={handleSubmit}>
-              <div style={{ marginBottom: '1rem' }}>
-                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'rgba(255,255,255,0.8)' }}>Title *</label>
-                <input value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} required
-                  style={{ width: '100%', padding: '0.8rem', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '8px', color: '#fff', boxSizing: 'border-box' }} />
-              </div>
-              <div style={{ marginBottom: '1rem' }}>
-                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'rgba(255,255,255,0.8)' }}>Description</label>
-                <textarea value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} rows={3}
-                  style={{ width: '100%', padding: '0.8rem', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '8px', color: '#fff', resize: 'vertical', boxSizing: 'border-box' }} />
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
-                <div>
-                  <label style={{ display: 'block', marginBottom: '0.5rem', color: 'rgba(255,255,255,0.8)' }}>Due Date *</label>
-                  <input type="datetime-local" value={formData.dueDate} onChange={e => setFormData({...formData, dueDate: e.target.value})} required
-                    style={{ width: '100%', padding: '0.8rem', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '8px', color: '#fff', colorScheme: 'dark', boxSizing: 'border-box' }} />
-                </div>
-                <div>
-                  <label style={{ display: 'block', marginBottom: '0.5rem', color: 'rgba(255,255,255,0.8)' }}>Course *</label>
-                  <select value={formData.courseId} onChange={e => setFormData({...formData, courseId: e.target.value})} required
-                    style={{ width: '100%', padding: '0.8rem', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '8px', color: '#fff', boxSizing: 'border-box' }}>
-                    <option value="">Select Course</option>
-                    {courses.map(c => <option key={c._id} value={c._id} style={{ background: '#302b63' }}>{c.name}</option>)}
-                  </select>
-                </div>
-              </div>
-              <button type="submit" style={{ padding: '0.8rem 2rem', background: 'linear-gradient(135deg, #667eea, #764ba2)', border: 'none', borderRadius: '8px', color: '#fff', cursor: 'pointer', fontWeight: 600 }}>Create Assignment</button>
-            </form>
-          </div>
-        )}
+        {/* Assignment Form Dialog */}
+        <Dialog open={showForm} onClose={() => setShowForm(false)} maxWidth="sm" fullWidth>
+          <DialogTitle>Create New Assignment</DialogTitle>
+          <DialogContent>
+            <Stack spacing={2}>
+              <TextField
+                label="Title"
+                value={formData.title}
+                onChange={e => setFormData({ ...formData, title: e.target.value })}
+                required
+                fullWidth
+              />
+              <TextField
+                label="Description"
+                value={formData.description}
+                onChange={e => setFormData({ ...formData, description: e.target.value })}
+                multiline
+                minRows={2}
+                fullWidth
+              />
+              <TextField
+                label="Due Date"
+                type="datetime-local"
+                value={formData.dueDate}
+                onChange={e => setFormData({ ...formData, dueDate: e.target.value })}
+                InputLabelProps={{ shrink: true }}
+                required
+                fullWidth
+              />
+              <TextField
+                select
+                label="Course"
+                value={formData.courseId}
+                onChange={e => setFormData({ ...formData, courseId: e.target.value })}
+                required
+                fullWidth
+              >
+                <MenuItem value="">Select Course</MenuItem>
+                {courses.map(c => (
+                  <MenuItem key={c._id} value={c._id}>{c.name || c.title}</MenuItem>
+                ))}
+              </TextField>
+            </Stack>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setShowForm(false)} color="secondary">Cancel</Button>
+            <Button onClick={handleSubmit} variant="contained" color="primary">
+              Create Assignment
+            </Button>
+          </DialogActions>
+        </Dialog>
 
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '3rem', color: 'rgba(255,255,255,0.6)' }}>Loading assignments...</div>
+          <Box sx={{ textAlign: 'center', py: 6, color: 'text.secondary' }}>
+            <CircularProgress />
+            <Typography mt={2}>Loading assignments...</Typography>
+          </Box>
         ) : assignments.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '3rem', background: 'rgba(255,255,255,0.05)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)' }}>
-            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📝</div>
-            <p style={{ color: 'rgba(255,255,255,0.6)' }}>No assignments yet</p>
-          </div>
+          <Paper sx={{ textAlign: 'center', p: 6, mt: 4 }}>
+            <AssignmentIcon sx={{ fontSize: 48, color: 'primary.main', mb: 2 }} />
+            <Typography color="text.secondary" fontSize={16}>No assignments yet</Typography>
+          </Paper>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <Grid container spacing={3}>
             {assignments.map(a => (
-              <div key={a._id} style={{ background: 'rgba(255,255,255,0.05)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', padding: '1.5rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                  <div style={{ flex: 1 }}>
-                    <h3 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '0.5rem' }}>{a.title}</h3>
-                    {a.description && <p style={{ color: 'rgba(255,255,255,0.7)', marginBottom: '0.8rem', lineHeight: 1.5 }}>{a.description}</p>}
-                    <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-                      {a.course && <span style={{ padding: '0.3rem 0.8rem', background: 'rgba(102,126,234,0.2)', border: '1px solid rgba(102,126,234,0.4)', borderRadius: '20px', fontSize: '0.8rem', color: '#a78bfa' }}>{a.course.name || 'Course'}</span>}
-                      <span style={{ padding: '0.3rem 0.8rem', background: new Date(a.dueDate) < new Date() ? 'rgba(255,100,100,0.2)' : 'rgba(100,200,100,0.2)', border: `1px solid ${new Date(a.dueDate) < new Date() ? 'rgba(255,100,100,0.4)' : 'rgba(100,200,100,0.4)'}`, borderRadius: '20px', fontSize: '0.8rem', color: new Date(a.dueDate) < new Date() ? '#ff6b6b' : '#6bffa0' }}>
-                        Due: {new Date(a.dueDate).toLocaleDateString()}
-                      </span>
-                    </div>
-                  </div>
-                  {isTeacher && (
-                    <button onClick={() => handleDelete(a._id)} style={{ padding: '0.4rem 0.9rem', background: 'rgba(255,100,100,0.2)', border: '1px solid rgba(255,100,100,0.4)', borderRadius: '6px', color: '#ff6b6b', cursor: 'pointer', marginLeft: '1rem', fontSize: '0.85rem' }}>Delete</button>
-                  )}
-                </div>
-              </div>
+              <Grid item xs={12} key={a._id}>
+                <Card sx={{ borderRadius: 2, p: 2, bgcolor: 'background.paper', borderLeft: '4px solid', borderColor: 'primary.main' }}>
+                  <CardContent>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                      <Box>
+                        <Typography variant="h6" fontWeight={700}>{a.title}</Typography>
+                        {a.description && (
+                          <Typography color="text.secondary" sx={{ mb: 1 }}>{a.description}</Typography>
+                        )}
+                        <Stack direction="row" spacing={1} sx={{ mt: 1 }}>
+                          {a.course && (
+                            <Chip label={a.course.name || a.course.title || 'Course'} color="secondary" size="small" />
+                          )}
+                          <Chip
+                            label={`Due: ${new Date(a.dueDate).toLocaleDateString()}`}
+                            color={new Date(a.dueDate) < new Date() ? 'error' : 'success'}
+                            size="small"
+                          />
+                        </Stack>
+                      </Box>
+                      {isTeacher && (
+                        <IconButton onClick={() => handleDelete(a._id)} color="error">
+                          <DeleteIcon />
+                        </IconButton>
+                      )}
+                    </Box>
+                  </CardContent>
+                </Card>
+              </Grid>
             ))}
-          </div>
+          </Grid>
         )}
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 };
 

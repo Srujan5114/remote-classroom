@@ -1,7 +1,23 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { getClasses, updateClass } from '../services/api';
-import '../App.css';
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import Paper from '@mui/material/Paper';
+import Stack from '@mui/material/Stack';
+import Box from '@mui/material/Box';
+import Chip from '@mui/material/Chip';
+import TextField from '@mui/material/TextField';
+import Alert from '@mui/material/Alert';
+import Grid from '@mui/material/Grid';
+import CircularProgress from '@mui/material/CircularProgress';
+import EventIcon from '@mui/icons-material/Event';
+import EditIcon from '@mui/icons-material/Edit';
+import PlayCircleFilledWhiteIcon from '@mui/icons-material/PlayCircleFilledWhite';
+import StopCircleIcon from '@mui/icons-material/StopCircle';
+import AddIcon from '@mui/icons-material/Add';
 
 export default function TeacherClassesPage() {
   const [classes, setClasses] = useState([]);
@@ -38,7 +54,7 @@ export default function TeacherClassesPage() {
 
   const handleStartClass = (classId, meetingLink) => {
     setLiveClass(classId);
-    window.open(meetingLink, '_blank');
+    if (meetingLink) window.open(meetingLink, '_blank');
   };
 
   const handleEndClass = () => {
@@ -53,7 +69,6 @@ export default function TeacherClassesPage() {
   const handleEditClick = (cls) => {
     setEditingId(cls._id);
     setSaveMsg('');
-    // Format scheduledTime for datetime-local input
     const dt = new Date(cls.scheduledTime);
     const formatted = dt.toISOString().slice(0, 16);
     setEditForm({
@@ -73,7 +88,6 @@ export default function TeacherClassesPage() {
       setSaving(true);
       setSaveMsg('');
       const updated = await updateClass(classId, editForm);
-      // Update local state
       setClasses(prev => prev.map(c => c._id === classId ? updated.data : c));
       setEditingId(null);
       setSaveMsg('Class updated successfully!');
@@ -91,158 +105,135 @@ export default function TeacherClassesPage() {
   };
 
   return (
-    <div>
-      <nav className="navbar">
-        <span className="navbar-brand">Remote<span>Classroom</span></span>
-        <div className="navbar-links">
-          <Link to="/teacher-dashboard"><button>Dashboard</button></Link>
-          <Link to="/schedule"><button>Schedule Class</button></Link>
-          <button className="btn-logout" onClick={handleLogout}>Logout</button>
-        </div>
-      </nav>
+    <Box sx={{ bgcolor: '#f5f6fa', minHeight: '100vh' }}>
+      {/* AppBar */}
+      <AppBar position="static" color="primary" elevation={2}>
+        <Toolbar>
+          <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: 700 }}>
+            Remote<Typography component="span" variant="h6" color="secondary" sx={{ fontWeight: 700 }}>Classroom</Typography>
+          </Typography>
+          <Button color="inherit" component={RouterLink} to="/teacher-dashboard">Dashboard</Button>
+          <Button color="inherit" component={RouterLink} to="/schedule">Schedule Class</Button>
+          <Button color="inherit" onClick={handleLogout}>Logout</Button>
+        </Toolbar>
+      </AppBar>
 
-      <div className="page-container">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-          <h1 className="page-title" style={{ margin: 0 }}>My Scheduled Classes</h1>
-          <Link to="/schedule"><button className="btn btn-blue">+ Schedule New Class</button></Link>
-        </div>
+      <Box sx={{ maxWidth: 900, mx: 'auto', p: { xs: 2, md: 4 } }}>
+        <Stack direction="row" justifyContent="space-between" alignItems="center" mb={3}>
+          <Typography variant="h4" sx={{ fontWeight: 700 }}>My Scheduled Classes</Typography>
+          <Button component={RouterLink} to="/schedule" variant="contained" color="primary" startIcon={<AddIcon />}>+ Schedule New Class</Button>
+        </Stack>
 
-        {/* Success/Error message */}
         {saveMsg && (
-          <div style={{
-            padding: '12px 16px',
-            borderRadius: '8px',
-            marginBottom: '16px',
-            background: saveMsg.includes('success') ? '#d3f9d8' : '#ffe3e3',
-            color: saveMsg.includes('success') ? '#2b8a3e' : '#c92a2a',
-            border: `1px solid ${saveMsg.includes('success') ? '#b2f2bb' : '#ffb3b3'}`
-          }}>
-            {saveMsg}
-          </div>
+          <Alert severity={saveMsg.includes('success') ? 'success' : 'error'} sx={{ mb: 2 }}>{saveMsg}</Alert>
         )}
 
         {!user ? (
-          <div className="card"><p style={{ color: '#e63946' }}>Please login first.</p></div>
+          <Paper elevation={1} sx={{ p: 3, mb: 2 }}>
+            <Typography color="error">Please login first.</Typography>
+          </Paper>
         ) : classes.length === 0 ? (
-          <div className="card" style={{ textAlign: 'center', padding: '40px' }}>
-            <p style={{ color: '#888', fontSize: '16px', marginBottom: '16px' }}>No classes scheduled yet.</p>
-            <Link to="/schedule"><button className="btn btn-blue">Schedule Your First Class</button></Link>
-          </div>
+          <Paper elevation={1} sx={{ textAlign: 'center', p: 4, mb: 2 }}>
+            <Typography color="text.secondary" sx={{ mb: 2 }}>No classes scheduled yet.</Typography>
+            <Button component={RouterLink} to="/schedule" variant="contained" color="primary">Schedule Your First Class</Button>
+          </Paper>
         ) : (
-          classes.map((cls) => (
-            <div
-              key={cls._id}
-              className="card"
-              style={{
-                marginBottom: '16px',
-                border: liveClass === cls._id ? '2px solid #2dc653' : '1px solid #e9ecef',
-                background: liveClass === cls._id ? '#f0fff4' : 'white'
-              }}
-            >
-              {editingId === cls._id ? (
-                /* ===== EDIT MODE ===== */
-                <div>
-                  <h3 style={{ margin: '0 0 16px 0', color: '#1a1a2e' }}>Edit Class</h3>
-                  <div className="form-group">
-                    <label>Class Title</label>
-                    <input
-                      name="title"
-                      value={editForm.title}
-                      onChange={handleEditChange}
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label>Scheduled Date & Time</label>
-                    <input
-                      type="datetime-local"
-                      name="scheduledTime"
-                      value={editForm.scheduledTime}
-                      onChange={handleEditChange}
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label>Duration (minutes)</label>
-                    <input
-                      type="number"
-                      name="duration"
-                      value={editForm.duration}
-                      onChange={handleEditChange}
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label>Meeting Link</label>
-                    <input
-                      name="meetingLink"
-                      value={editForm.meetingLink}
-                      onChange={handleEditChange}
-                      placeholder="https://meet.google.com/..."
-                    />
-                  </div>
-                  <div style={{ display: 'flex', gap: '10px', marginTop: '4px' }}>
-                    <button
-                      className="btn btn-green"
-                      onClick={() => handleEditSave(cls._id)}
-                      disabled={saving}
-                    >
-                      {saving ? 'Saving...' : 'Save Changes'}
-                    </button>
-                    <button className="btn btn-red" onClick={handleEditCancel}>
-                      Cancel
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                /* ===== VIEW MODE ===== */
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
-                      <h3 style={{ margin: 0, color: '#1a1a2e' }}>{cls.title}</h3>
-                      <span className={`badge ${liveClass === cls._id ? 'badge-green' : 'badge-orange'}`}>
-                        {liveClass === cls._id ? 'LIVE' : 'Scheduled'}
-                      </span>
-                    </div>
-                    <p style={{ margin: '0 0 6px 0', color: '#555', fontSize: '14px' }}>
-                      <strong>Course:</strong> {cls.course?.title}
-                    </p>
-                    <p style={{ margin: '0 0 6px 0', color: '#555', fontSize: '14px' }}>
-                      <strong>Time:</strong> {new Date(cls.scheduledTime).toLocaleString()}
-                    </p>
-                    <p style={{ margin: '0 0 6px 0', color: '#555', fontSize: '14px' }}>
-                      <strong>Duration:</strong> {cls.duration} minutes
-                    </p>
-                    {cls.meetingLink && (
-                      <p style={{ margin: 0, fontSize: '14px' }}>
-                        <strong>Meeting Link:</strong>{' '}
-                        <a href={cls.meetingLink} target="_blank" rel="noopener noreferrer" style={{ color: '#4361ee' }}>
-                          {cls.meetingLink}
-                        </a>
-                      </p>
-                    )}
-                  </div>
-                  <div style={{ marginLeft: '20px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    {liveClass === cls._id ? (
-                      <button onClick={() => handleEndClass()} className="btn btn-red">
-                        End Class
-                      </button>
-                    ) : (
-                      <button onClick={() => handleStartClass(cls._id, cls.meetingLink)} className="btn btn-green">
-                        Start Class
-                      </button>
-                    )}
-                    <button
-                      onClick={() => handleEditClick(cls)}
-                      className="btn"
-                      style={{ background: '#4361ee', color: 'white' }}
-                    >
-                      Edit Timings
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-          ))
+          <Stack spacing={2}>
+            {classes.map((cls) => (
+              <Paper
+                key={cls._id}
+                elevation={2}
+                sx={{
+                  border: liveClass === cls._id ? '2px solid #2dc653' : '1px solid #e9ecef',
+                  bgcolor: liveClass === cls._id ? '#f0fff4' : 'white',
+                  p: 2
+                }}
+              >
+                {editingId === cls._id ? (
+                  // ===== EDIT MODE =====
+                  <Box>
+                    <Typography variant="h6" sx={{ mb: 2 }}>Edit Class</Typography>
+                    <Grid container spacing={2}>
+                      <Grid item xs={12} md={6}>
+                        <TextField
+                          label="Class Title"
+                          name="title"
+                          value={editForm.title}
+                          onChange={handleEditChange}
+                          fullWidth
+                          sx={{ mb: 2 }}
+                        />
+                        <TextField
+                          label="Scheduled Date & Time"
+                          type="datetime-local"
+                          name="scheduledTime"
+                          value={editForm.scheduledTime}
+                          onChange={handleEditChange}
+                          fullWidth
+                          sx={{ mb: 2 }}
+                          InputLabelProps={{ shrink: true }}
+                        />
+                        <TextField
+                          label="Duration (minutes)"
+                          type="number"
+                          name="duration"
+                          value={editForm.duration}
+                          onChange={handleEditChange}
+                          fullWidth
+                          sx={{ mb: 2 }}
+                        />
+                        <TextField
+                          label="Meeting Link"
+                          name="meetingLink"
+                          value={editForm.meetingLink}
+                          onChange={handleEditChange}
+                          fullWidth
+                          sx={{ mb: 2 }}
+                        />
+                      </Grid>
+                    </Grid>
+                    <Stack direction="row" spacing={2} mt={2}>
+                      <Button
+                        variant="contained"
+                        color="success"
+                        onClick={() => handleEditSave(cls._id)}
+                        disabled={saving}
+                      >
+                        {saving ? <CircularProgress size={20} color="inherit" /> : 'Save Changes'}
+                      </Button>
+                      <Button variant="outlined" color="error" onClick={handleEditCancel}>Cancel</Button>
+                    </Stack>
+                  </Box>
+                ) : (
+                  // ===== VIEW MODE =====
+                  <Stack direction={{ xs: 'column', sm: 'row' }} justifyContent="space-between" alignItems={{ xs: 'flex-start', sm: 'center' }} spacing={2}>
+                    <Box flex={1}>
+                      <Stack direction="row" alignItems="center" spacing={1} mb={1}>
+                        <Typography variant="h6" sx={{ color: '#1a1a2e', mb: 0 }}>{cls.title}</Typography>
+                        <Chip label={liveClass === cls._id ? 'LIVE' : 'Scheduled'} color={liveClass === cls._id ? 'success' : 'warning'} size="small" />
+                      </Stack>
+                      <Typography variant="body2" color="text.secondary"><strong>Course:</strong> {cls.course?.title}</Typography>
+                      <Typography variant="body2" color="text.secondary"><strong>Time:</strong> {new Date(cls.scheduledTime).toLocaleString()}</Typography>
+                      <Typography variant="body2" color="text.secondary"><strong>Duration:</strong> {cls.duration} minutes</Typography>
+                      {cls.meetingLink && (
+                        <Typography variant="body2" color="primary.main"><strong>Meeting Link:</strong> <a href={cls.meetingLink} target="_blank" rel="noopener noreferrer" style={{ color: '#4361ee' }}>{cls.meetingLink}</a></Typography>
+                      )}
+                    </Box>
+                    <Stack spacing={1} direction="column" alignItems="flex-end">
+                      {liveClass === cls._id ? (
+                        <Button onClick={handleEndClass} variant="contained" color="error" startIcon={<StopCircleIcon />}>End Class</Button>
+                      ) : (
+                        <Button onClick={() => handleStartClass(cls._id, cls.meetingLink)} variant="contained" color="success" startIcon={<PlayCircleFilledWhiteIcon />}>Start Class</Button>
+                      )}
+                      <Button onClick={() => handleEditClick(cls)} variant="outlined" color="primary" startIcon={<EditIcon />}>Edit Timings</Button>
+                    </Stack>
+                  </Stack>
+                )}
+              </Paper>
+            ))}
+          </Stack>
         )}
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 }

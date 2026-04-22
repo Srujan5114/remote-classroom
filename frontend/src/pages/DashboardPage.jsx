@@ -1,5 +1,16 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import {
+  AppBar, Toolbar, Typography, Button, Avatar, Box, Grid, Card, CardContent, Chip, Paper
+} from '@mui/material';
+import SchoolIcon from '@mui/icons-material/School';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import EventIcon from '@mui/icons-material/Event';
+import AssignmentIcon from '@mui/icons-material/Assignment';
+import FolderIcon from '@mui/icons-material/Folder';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import ChatIcon from '@mui/icons-material/Chat';
+import DashboardIcon from '@mui/icons-material/Dashboard';
 
 export default function DashboardPage() {
   const navigate = useNavigate();
@@ -8,7 +19,7 @@ export default function DashboardPage() {
     const storedUser = localStorage.getItem('user');
     user = storedUser ? JSON.parse(storedUser) : null;
   } catch (error) {
-    return <h2 style={{ padding: '20px' }}>Invalid user data in localStorage</h2>;
+    return <Typography sx={{ p: 4 }}>Invalid user data in localStorage</Typography>;
   }
 
   const handleLogout = () => {
@@ -21,24 +32,24 @@ export default function DashboardPage() {
   const isAdmin = user?.role === 'admin';
 
   const teacherLinks = [
-    { path: '/teacher-dashboard', label: 'Teacher Dashboard', icon: '🏫', desc: 'Manage your classroom' },
-    { path: '/courses', label: 'My Courses', icon: '📚', desc: 'View and manage courses' },
-    { path: '/schedule-class', label: 'Schedule Class', icon: '🗓️', desc: 'Create a new class session' },
-    { path: '/teacher-classes', label: 'My Classes', icon: '🎬', desc: 'View all your classes' },
-    { path: '/assignments', label: 'Assignments', icon: '📝', desc: 'Create and manage assignments' },
-    { path: '/materials', label: 'Materials', icon: '📂', desc: 'Upload course materials' },
-    { path: '/chat', label: 'Class Chat', icon: '💬', desc: 'Chat with students' },
-    { path: '/notifications', label: 'Notifications', icon: '🔔', desc: 'View your notifications' },
+    { path: '/teacher-dashboard', label: 'Teacher Dashboard', icon: <DashboardIcon color="primary" />, desc: 'Manage your classroom' },
+    { path: '/courses', label: 'My Courses', icon: <MenuBookIcon color="primary" />, desc: 'View and manage courses' },
+    { path: '/schedule-class', label: 'Schedule Class', icon: <EventIcon color="primary" />, desc: 'Create a new class session' },
+    { path: '/teacher-classes', label: 'My Classes', icon: <SchoolIcon color="primary" />, desc: 'View all your classes' },
+    { path: '/assignments', label: 'Assignments', icon: <AssignmentIcon color="primary" />, desc: 'Create and manage assignments' },
+    { path: '/materials', label: 'Materials', icon: <FolderIcon color="primary" />, desc: 'Upload course materials' },
+    { path: '/chat', label: 'Class Chat', icon: <ChatIcon color="primary" />, desc: 'Chat with students' },
+    { path: '/notifications', label: 'Notifications', icon: <NotificationsIcon color="primary" />, desc: 'View your notifications' },
   ];
 
   const studentLinks = [
-    { path: '/student-dashboard', label: 'Student Dashboard', icon: '🏠', desc: 'Your learning overview' },
-    { path: '/courses', label: 'My Courses', icon: '📚', desc: 'View enrolled courses' },
-    { path: '/student-classes', label: 'Upcoming Classes', icon: '🎬', desc: 'View scheduled classes' },
-    { path: '/assignments', label: 'Assignments', icon: '📝', desc: 'View your assignments' },
-    { path: '/materials', label: 'Study Materials', icon: '📂', desc: 'Access course materials' },
-    { path: '/chat', label: 'Class Chat', icon: '💬', desc: 'Chat with classmates' },
-    { path: '/notifications', label: 'Notifications', icon: '🔔', desc: 'View your notifications' },
+    { path: '/student-dashboard', label: 'Student Dashboard', icon: <DashboardIcon color="secondary" />, desc: 'Your learning overview' },
+    { path: '/courses', label: 'My Courses', icon: <MenuBookIcon color="secondary" />, desc: 'View enrolled courses' },
+    { path: '/student-classes', label: 'Upcoming Classes', icon: <SchoolIcon color="secondary" />, desc: 'View scheduled classes' },
+    { path: '/assignments', label: 'Assignments', icon: <AssignmentIcon color="secondary" />, desc: 'View your assignments' },
+    { path: '/materials', label: 'Study Materials', icon: <FolderIcon color="secondary" />, desc: 'Access course materials' },
+    { path: '/chat', label: 'Class Chat', icon: <ChatIcon color="secondary" />, desc: 'Chat with classmates' },
+    { path: '/notifications', label: 'Notifications', icon: <NotificationsIcon color="secondary" />, desc: 'View your notifications' },
   ];
 
   const adminLinks = [
@@ -55,62 +66,87 @@ export default function DashboardPage() {
     const links = isAdmin ? adminLinks : (isTeacher ? teacherLinks : studentLinks);
 
   return (
-    <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #0f0c29, #302b63, #24243e)', fontFamily: 'Segoe UI, sans-serif', color: '#fff' }}>
-      {/* Header */}
-      <div style={{ background: 'rgba(0,0,0,0.3)', backdropFilter: 'blur(10px)', borderBottom: '1px solid rgba(255,255,255,0.1)', padding: '1rem 2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'linear-gradient(135deg, #667eea, #764ba2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', fontWeight: 700 }}>{user?.name?.charAt(0) || 'U'}</div>
-          <div>
-            <div style={{ fontWeight: 700, fontSize: '1rem' }}>Welcome, {user?.name || 'User'}</div>
-            <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)', textTransform: 'capitalize' }}>{user?.role || 'user'}</div>
-          </div>
-        </div>
-        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-          <span style={{ padding: '0.3rem 0.8rem', background: isTeacher ? 'rgba(102,126,234,0.2)' : 'rgba(52,211,153,0.2)', border: `1px solid ${isTeacher ? 'rgba(102,126,234,0.4)' : 'rgba(52,211,153,0.4)'}`, borderRadius: '20px', fontSize: '0.8rem', color: isTeacher ? '#a78bfa' : '#6ee7b7', textTransform: 'capitalize' }}>{user?.role}</span>
-          <button onClick={handleLogout} style={{ padding: '0.5rem 1.2rem', background: 'rgba(255,100,100,0.2)', border: '1px solid rgba(255,100,100,0.4)', borderRadius: '8px', color: '#ff6b6b', cursor: 'pointer', fontWeight: 600 }}>Logout</button>
-        </div>
-      </div>
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
+      <AppBar position="static" color="primary" elevation={2}>
+        <Toolbar sx={{ justifyContent: 'space-between' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Avatar sx={{ bgcolor: 'secondary.main', mr: 1 }}>{user?.name?.charAt(0) || 'U'}</Avatar>
+            <Box>
+              <Typography variant="subtitle1" fontWeight={700}>Welcome, {user?.name || 'User'}</Typography>
+              <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.7)', textTransform: 'capitalize' }}>{user?.role || 'user'}</Typography>
+            </Box>
+          </Box>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Chip label={user?.role} color={isTeacher ? 'primary' : 'secondary'} sx={{ textTransform: 'capitalize' }} />
+            <Button variant="outlined" color="error" onClick={handleLogout}>Logout</Button>
+          </Box>
+        </Toolbar>
+      </AppBar>
 
-      <div style={{ padding: '2rem', maxWidth: '1200px', margin: '0 auto' }}>
-        {/* Welcome Banner */}
-        <div style={{ background: 'linear-gradient(135deg, rgba(102,126,234,0.15), rgba(118,75,162,0.15))', backdropFilter: 'blur(10px)', border: '1px solid rgba(102,126,234,0.2)', borderRadius: '16px', padding: '2rem', marginBottom: '2rem' }}>
-          <h1 style={{ fontSize: '1.8rem', fontWeight: 700, marginBottom: '0.5rem' }}>
-            {isTeacher ? '🏫' : '🏠'} {isTeacher ? 'Teacher' : 'Student'} Dashboard
-          </h1>
-          <p style={{ color: 'rgba(255,255,255,0.7)', marginBottom: '1rem' }}>
+      <Box sx={{ p: { xs: 2, md: 4 }, maxWidth: 1200, mx: 'auto' }}>
+        <Paper elevation={3} sx={{ borderRadius: 3, p: { xs: 2, md: 4 }, mb: 4, background: 'linear-gradient(135deg, rgba(15,76,129,0.16) 0%, rgba(255,122,24,0.18) 100%)' }}>
+          <Typography variant="h4" fontWeight={700} mb={1} color="primary">
+            {isTeacher ? 'Teacher' : 'Student'} Dashboard
+          </Typography>
+          <Typography color="text.secondary" mb={2}>
             {isTeacher ? 'Manage your classes, students, assignments and materials.' : 'Access your classes, assignments and study materials.'}
-          </p>
-          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-            <div style={{ padding: '0.8rem 1.2rem', background: 'rgba(255,255,255,0.08)', borderRadius: '10px', minWidth: '120px', textAlign: 'center' }}>
-              <div style={{ fontSize: '1.5rem', fontWeight: 700 }}>0</div>
-              <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.6)' }}>Active Courses</div>
-            </div>
-            <div style={{ padding: '0.8rem 1.2rem', background: 'rgba(255,255,255,0.08)', borderRadius: '10px', minWidth: '120px', textAlign: 'center' }}>
-              <div style={{ fontSize: '1.5rem', fontWeight: 700 }}>0</div>
-              <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.6)' }}>Classes Today</div>
-            </div>
-            <div style={{ padding: '0.8rem 1.2rem', background: 'rgba(255,255,255,0.08)', borderRadius: '10px', minWidth: '120px', textAlign: 'center' }}>
-              <div style={{ fontSize: '1.5rem', fontWeight: 700 }}>0</div>
-              <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.6)' }}>Assignments</div>
-            </div>
-          </div>
-        </div>
+          </Typography>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={4}>
+              <Card sx={{ borderRadius: 2 }}>
+                <CardContent>
+                  <Typography variant="h5" fontWeight={700}>0</Typography>
+                  <Typography color="text.secondary">Active Courses</Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <Card sx={{ borderRadius: 2 }}>
+                <CardContent>
+                  <Typography variant="h5" fontWeight={700}>0</Typography>
+                  <Typography color="text.secondary">Classes Today</Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <Card sx={{ borderRadius: 2 }}>
+                <CardContent>
+                  <Typography variant="h5" fontWeight={700}>0</Typography>
+                  <Typography color="text.secondary">Assignments</Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
+        </Paper>
 
-        {/* Navigation Grid */}
-        <h2 style={{ marginBottom: '1rem', fontSize: '1.2rem', color: 'rgba(255,255,255,0.8)' }}>Quick Access</h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '1rem' }}>
+        <Typography variant="h6" mb={2} color="primary.dark" sx={{ letterSpacing: 0.2 }}>Quick Access</Typography>
+        <Grid container spacing={2}>
           {links.map(link => (
-            <div key={link.path} onClick={() => navigate(link.path)}
-              style={{ background: 'rgba(255,255,255,0.05)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', padding: '1.5rem', cursor: 'pointer', transition: 'all 0.25s', textDecoration: 'none' }}
-              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.borderColor = 'rgba(102,126,234,0.4)'; }}
-              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'; }}>
-              <div style={{ fontSize: '2rem', marginBottom: '0.7rem' }}>{link.icon}</div>
-              <h3 style={{ fontWeight: 600, marginBottom: '0.4rem', fontSize: '1rem' }}>{link.label}</h3>
-              <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.82rem', margin: 0 }}>{link.desc}</p>
-            </div>
+            <Grid item xs={12} sm={6} md={3} key={link.path}>
+              <Card
+                sx={{
+                  borderRadius: 3,
+                  p: 2,
+                  cursor: 'pointer',
+                  transition: 'transform 0.2s',
+                  '&:hover': { boxShadow: 6, transform: 'translateY(-4px)' },
+                  height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  textAlign: 'center',
+                }}
+                onClick={() => navigate(link.path)}
+              >
+                <Box sx={{ fontSize: 40, mb: 1 }}>{link.icon}</Box>
+                <Typography variant="subtitle1" fontWeight={600} mb={0.5}>{link.label}</Typography>
+                <Typography variant="body2" color="text.secondary">{link.desc}</Typography>
+              </Card>
+            </Grid>
           ))}
-        </div>
-      </div>
-    </div>
+        </Grid>
+      </Box>
+    </Box>
   );
 }

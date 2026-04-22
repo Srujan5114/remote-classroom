@@ -1,9 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import {
+  Box, AppBar, Toolbar, Typography, Button, Paper, Grid, Card, CardContent, Chip, IconButton, CircularProgress, Stack, Alert
+} from '@mui/material';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import DeleteIcon from '@mui/icons-material/Delete';
+import MarkEmailReadIcon from '@mui/icons-material/MarkEmailRead';
 
 const NotificationsPage = () => {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const token = localStorage.getItem('token');
 
   const fetchNotifications = async () => {
@@ -13,7 +20,7 @@ const NotificationsPage = () => {
       });
       setNotifications(res.data);
     } catch (err) {
-      console.error(err);
+      setError('Failed to fetch notifications');
     } finally {
       setLoading(false);
     }
@@ -28,7 +35,7 @@ const NotificationsPage = () => {
       });
       setNotifications(prev => prev.map(n => n._id === id ? {...n, read: true} : n));
     } catch (err) {
-      console.error(err);
+      setError('Failed to mark as read');
     }
   };
 
@@ -39,7 +46,7 @@ const NotificationsPage = () => {
       });
       setNotifications(prev => prev.map(n => ({...n, read: true})));
     } catch (err) {
-      console.error(err);
+      setError('Failed to mark all as read');
     }
   };
 
@@ -50,7 +57,7 @@ const NotificationsPage = () => {
       });
       setNotifications(prev => prev.filter(n => n._id !== id));
     } catch (err) {
-      console.error(err);
+      setError('Failed to delete notification');
     }
   };
 
@@ -60,65 +67,89 @@ const NotificationsPage = () => {
   };
 
   const typeColor = (type) => {
-    const colors = { info: '#60a5fa', assignment: '#a78bfa', class: '#34d399', grade: '#fbbf24', chat: '#f472b6', attendance: '#6ee7b7' };
-    return colors[type] || '#94a3b8';
+    const colors = { info: 'info', assignment: 'secondary', class: 'success', grade: 'warning', chat: 'error', attendance: 'success' };
+    return colors[type] || 'default';
   };
 
   const unreadCount = notifications.filter(n => !n.read).length;
 
   return (
-    <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #0f0c29, #302b63, #24243e)', padding: '2rem', color: '#fff', fontFamily: 'Segoe UI, sans-serif' }}>
-      <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-          <div>
-            <h1 style={{ fontSize: '2rem', fontWeight: 700, marginBottom: '0.5rem' }}>
-              Notifications
-              {unreadCount > 0 && (
-                <span style={{ marginLeft: '0.8rem', padding: '0.2rem 0.7rem', background: 'linear-gradient(135deg, #667eea, #764ba2)', borderRadius: '20px', fontSize: '0.9rem', fontWeight: 600 }}>{unreadCount}</span>
-              )}
-            </h1>
-            <p style={{ color: 'rgba(255,255,255,0.6)' }}>Stay updated with your class activities</p>
-          </div>
-          <div style={{ display: 'flex', gap: '1rem' }}>
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
+      <AppBar position="static" color="primary" elevation={2}>
+        <Toolbar sx={{ justifyContent: 'space-between' }}>
+          <Typography variant="h6" fontWeight={700} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <NotificationsIcon sx={{ fontSize: 28 }} /> Notifications
             {unreadCount > 0 && (
-              <button onClick={markAllAsRead} style={{ padding: '0.7rem 1.5rem', background: 'rgba(102,126,234,0.2)', border: '1px solid rgba(102,126,234,0.4)', borderRadius: '8px', color: '#a78bfa', cursor: 'pointer', fontWeight: 600 }}>Mark All Read</button>
+              <Chip label={unreadCount} color="secondary" size="small" sx={{ ml: 2 }} />
             )}
-            <button onClick={() => window.history.back()} style={{ padding: '0.7rem 1.5rem', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '8px', color: '#fff', cursor: 'pointer' }}>Back</button>
-          </div>
-        </div>
+          </Typography>
+          {unreadCount > 0 && (
+            <Button
+              variant="contained"
+              color="secondary"
+              startIcon={<MarkEmailReadIcon />}
+              onClick={markAllAsRead}
+            >
+              Mark All Read
+            </Button>
+          )}
+        </Toolbar>
+      </AppBar>
+
+      <Box sx={{ maxWidth: 800, mx: 'auto', p: { xs: 2, md: 4 } }}>
+        {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '3rem', color: 'rgba(255,255,255,0.6)' }}>Loading notifications...</div>
+          <Box sx={{ textAlign: 'center', py: 6, color: 'text.secondary' }}>
+            <CircularProgress />
+            <Typography mt={2}>Loading notifications...</Typography>
+          </Box>
         ) : notifications.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '4rem', background: 'rgba(255,255,255,0.05)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.1)' }}>
-            <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🔔</div>
-            <h3 style={{ marginBottom: '0.5rem' }}>All caught up!</h3>
-            <p style={{ color: 'rgba(255,255,255,0.5)' }}>No notifications yet. We'll notify you when something happens.</p>
-          </div>
+          <Paper sx={{ textAlign: 'center', p: 6, mt: 4 }}>
+            <NotificationsIcon sx={{ fontSize: 48, color: 'primary.main', mb: 2 }} />
+            <Typography color="text.secondary" fontSize={16}>No notifications yet</Typography>
+          </Paper>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+          <Stack spacing={2}>
             {notifications.map(n => (
-              <div key={n._id} onClick={() => !n.read && markAsRead(n._id)}
-                style={{ background: n.read ? 'rgba(255,255,255,0.03)' : 'rgba(102,126,234,0.08)', border: `1px solid ${n.read ? 'rgba(255,255,255,0.08)' : 'rgba(102,126,234,0.25)'}`, borderRadius: '12px', padding: '1.2rem 1.5rem', cursor: n.read ? 'default' : 'pointer', display: 'flex', alignItems: 'center', gap: '1rem', transition: 'all 0.2s' }}>
-                <div style={{ fontSize: '1.8rem', flexShrink: 0 }}>{typeIcon(n.type)}</div>
-                <div style={{ flex: 1 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.3rem' }}>
-                    <h3 style={{ fontSize: '1rem', fontWeight: n.read ? 400 : 600, color: n.read ? 'rgba(255,255,255,0.7)' : '#fff' }}>{n.title}</h3>
-                    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                      {!n.read && <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: typeColor(n.type), display: 'inline-block' }}></span>}
-                      <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.4)' }}>{new Date(n.createdAt).toLocaleDateString()} {new Date(n.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
-                    </div>
-                  </div>
-                  <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.9rem', margin: 0 }}>{n.message}</p>
-                </div>
-                <button onClick={(e) => { e.stopPropagation(); deleteNotification(n._id); }}
-                  style={{ padding: '0.3rem 0.6rem', background: 'rgba(255,100,100,0.1)', border: '1px solid rgba(255,100,100,0.2)', borderRadius: '6px', color: 'rgba(255,100,100,0.7)', cursor: 'pointer', fontSize: '0.75rem', flexShrink: 0 }}>Delete</button>
-              </div>
+              <Card
+                key={n._id}
+                sx={{
+                  bgcolor: n.read ? 'background.paper' : 'secondary.light',
+                  borderLeft: n.read ? '4px solid #e0e0e0' : '4px solid',
+                  borderColor: n.read ? '#e0e0e0' : 'secondary.main',
+                  opacity: n.read ? 0.7 : 1,
+                  cursor: n.read ? 'default' : 'pointer',
+                  transition: 'all 0.2s'
+                }}
+                onClick={() => !n.read && markAsRead(n._id)}
+              >
+                <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <Box sx={{ fontSize: 32 }}>{typeIcon(n.type)}</Box>
+                  <Box sx={{ flex: 1 }}>
+                    <Typography variant="subtitle1" fontWeight={n.read ? 400 : 700} color={n.read ? 'text.secondary' : 'text.primary'}>
+                      {n.title}
+                    </Typography>
+                    <Typography color="text.secondary" fontSize={14}>
+                      {n.message}
+                    </Typography>
+                    <Stack direction="row" spacing={1} mt={1}>
+                      <Chip label={n.type} color={typeColor(n.type)} size="small" />
+                      <Typography variant="caption" color="text.secondary">
+                        {new Date(n.createdAt).toLocaleDateString()} {new Date(n.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </Typography>
+                    </Stack>
+                  </Box>
+                  <IconButton onClick={e => { e.stopPropagation(); deleteNotification(n._id); }} color="error">
+                    <DeleteIcon />
+                  </IconButton>
+                </CardContent>
+              </Card>
             ))}
-          </div>
+          </Stack>
         )}
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 };
 

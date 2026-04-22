@@ -1,7 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { getClasses, markAttendance } from '../services/api';
-import '../App.css';
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import Paper from '@mui/material/Paper';
+import Stack from '@mui/material/Stack';
+import Box from '@mui/material/Box';
+import Chip from '@mui/material/Chip';
+import CircularProgress from '@mui/material/CircularProgress';
+import EventIcon from '@mui/icons-material/Event';
+import DoneIcon from '@mui/icons-material/Done';
+import SchoolIcon from '@mui/icons-material/School';
 
 export default function StudentClassesPage() {
   const [classes, setClasses] = useState([]);
@@ -54,84 +65,81 @@ export default function StudentClassesPage() {
   const past = classes.filter(c => new Date(c.scheduledTime) <= now);
 
   return (
-    <div>
-      <nav className="navbar">
-        <span className="navbar-brand">Remote<span>Classroom</span></span>
-        <div className="navbar-links">
-          <Link to="/student-dashboard"><button>Dashboard</button></Link>
-          <Link to="/courses"><button>Courses</button></Link>
-          <button className="btn-logout" onClick={handleLogout}>Logout</button>
-        </div>
-      </nav>
+    <Box sx={{ bgcolor: '#f5f6fa', minHeight: '100vh' }}>
+      {/* AppBar */}
+      <AppBar position="static" color="primary" elevation={2}>
+        <Toolbar>
+          <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: 700 }}>
+            Remote<Typography component="span" variant="h6" color="secondary" sx={{ fontWeight: 700 }}>Classroom</Typography>
+          </Typography>
+          <Button color="inherit" component={RouterLink} to="/student-dashboard">Dashboard</Button>
+          <Button color="inherit" component={RouterLink} to="/courses">Courses</Button>
+          <Button color="inherit" onClick={handleLogout}>Logout</Button>
+        </Toolbar>
+      </AppBar>
 
-      <div className="page-container">
-        <h1 className="page-title">My Classes</h1>
+      <Box sx={{ maxWidth: 900, mx: 'auto', p: { xs: 2, md: 4 } }}>
+        <Typography variant="h4" sx={{ fontWeight: 700, mb: 3, mt: 1 }}>My Classes</Typography>
 
         {/* Upcoming Classes */}
-        <h2 style={{ fontSize: '18px', color: '#1a1a2e', marginBottom: '14px' }}>Upcoming Classes</h2>
+        <Typography variant="h6" sx={{ color: '#1a1a2e', mb: 2 }}>Upcoming Classes</Typography>
         {upcoming.length === 0 ? (
-          <div className="card" style={{ marginBottom: '24px', textAlign: 'center', padding: '30px' }}>
-            <p style={{ color: '#888' }}>No upcoming classes.</p>
-          </div>
+          <Paper elevation={1} sx={{ mb: 3, textAlign: 'center', p: 4 }}>
+            <Typography color="text.secondary">No upcoming classes.</Typography>
+          </Paper>
         ) : (
-          upcoming.map(cls => (
-            <div key={cls._id} className="card" style={{ marginBottom: '14px', borderLeft: '4px solid #4361ee' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div>
-                  <h3 style={{ margin: '0 0 6px 0', color: '#1a1a2e' }}>{cls.title}</h3>
-                  <p style={{ margin: '0 0 4px 0', fontSize: '14px', color: '#555' }}>
-                    <strong>Course:</strong> {cls.course?.title}
-                  </p>
-                  <p style={{ margin: '0 0 4px 0', fontSize: '14px', color: '#555' }}>
-                    <strong>Time:</strong> {new Date(cls.scheduledTime).toLocaleString()}
-                  </p>
-                  <p style={{ margin: 0, fontSize: '14px', color: '#555' }}>
-                    <strong>Duration:</strong> {cls.duration} minutes
-                  </p>
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'flex-end' }}>
+          <Stack spacing={2} mb={4}>
+            {upcoming.map(cls => (
+              <Paper key={cls._id} elevation={2} sx={{ borderLeft: '4px solid #4361ee', p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Box>
+                  <Typography variant="h6" sx={{ color: '#1a1a2e', mb: 0.5 }}>{cls.title}</Typography>
+                  <Typography variant="body2" color="text.secondary"><SchoolIcon sx={{ fontSize: 16, mr: 0.5 }} />Course: {cls.course?.title}</Typography>
+                  <Typography variant="body2" color="text.secondary"><EventIcon sx={{ fontSize: 16, mr: 0.5 }} />Time: {new Date(cls.scheduledTime).toLocaleString()}</Typography>
+                  <Typography variant="body2" color="text.secondary">Duration: {cls.duration} minutes</Typography>
+                </Box>
+                <Box display="flex" flexDirection="column" alignItems="flex-end" gap={1}>
                   {markedClasses.includes(cls._id) ? (
-                    <span className="badge badge-green">Attendance Marked</span>
+                    <Chip icon={<DoneIcon />} label="Attendance Marked" color="success" size="small" />
                   ) : (
-                    <button
-                      className="btn btn-blue"
+                    <Button
+                      variant="contained"
+                      color="primary"
                       onClick={() => handleJoinAndAttend(cls)}
                       disabled={loading}
+                      sx={{ minWidth: 180, fontWeight: 600 }}
                     >
-                      {loading ? 'Joining...' : 'Join & Mark Attendance'}
-                    </button>
+                      {loading ? <CircularProgress size={20} color="inherit" /> : 'Join & Mark Attendance'}
+                    </Button>
                   )}
-                </div>
-              </div>
-            </div>
-          ))
+                </Box>
+              </Paper>
+            ))}
+          </Stack>
         )}
 
         {/* Past Classes */}
-        <h2 style={{ fontSize: '18px', color: '#1a1a2e', margin: '24px 0 14px 0' }}>Past Classes</h2>
+        <Typography variant="h6" sx={{ color: '#1a1a2e', mt: 4, mb: 2 }}>Past Classes</Typography>
         {past.length === 0 ? (
-          <div className="card" style={{ textAlign: 'center', padding: '30px' }}>
-            <p style={{ color: '#888' }}>No past classes.</p>
-          </div>
+          <Paper elevation={1} sx={{ textAlign: 'center', p: 4 }}>
+            <Typography color="text.secondary">No past classes.</Typography>
+          </Paper>
         ) : (
-          past.map(cls => (
-            <div key={cls._id} className="card" style={{ marginBottom: '14px', borderLeft: '4px solid #adb5bd' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div>
-                  <h3 style={{ margin: '0 0 6px 0', color: '#666' }}>{cls.title}</h3>
-                  <p style={{ margin: '0 0 4px 0', fontSize: '14px', color: '#888' }}>
-                    <strong>Course:</strong> {cls.course?.title}
-                  </p>
-                  <p style={{ margin: 0, fontSize: '14px', color: '#888' }}>
-                    <strong>Time:</strong> {new Date(cls.scheduledTime).toLocaleString()}
-                  </p>
-                </div>
-                <span className="badge badge-blue">Completed</span>
-              </div>
-            </div>
-          ))
+          <Stack spacing={2}>
+            {past.map(cls => (
+              <Paper key={cls._id} elevation={1} sx={{ mb: 2, borderLeft: '4px solid #adb5bd', p: 2 }}>
+                <Box display="flex" justifyContent="space-between" alignItems="center">
+                  <Box>
+                    <Typography variant="h6" sx={{ color: '#666', mb: 0.5 }}>{cls.title}</Typography>
+                    <Typography variant="body2" color="text.secondary"><strong>Course:</strong> {cls.course?.title}</Typography>
+                    <Typography variant="body2" color="text.secondary"><strong>Time:</strong> {new Date(cls.scheduledTime).toLocaleString()}</Typography>
+                  </Box>
+                  <Chip label="Completed" color="info" size="small" />
+                </Box>
+              </Paper>
+            ))}
+          </Stack>
         )}
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 }

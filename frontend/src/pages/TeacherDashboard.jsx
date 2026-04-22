@@ -1,7 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { getCourses, getClasses } from '../services/api';
-import '../App.css';
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import Paper from '@mui/material/Paper';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Grid from '@mui/material/Grid';
+import Stack from '@mui/material/Stack';
+import Box from '@mui/material/Box';
+import SchoolIcon from '@mui/icons-material/School';
+import ClassIcon from '@mui/icons-material/Class';
+import EventIcon from '@mui/icons-material/Event';
+import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 
 export default function TeacherDashboard() {
   const [courses, setCourses] = useState([]);
@@ -36,94 +50,129 @@ export default function TeacherDashboard() {
   const upcomingClasses = classes.filter(c => new Date(c.scheduledTime) > new Date());
 
   return (
-    <div>
-      {/* Navbar */}
-      <nav className="navbar">
-        <span className="navbar-brand">Remote<span>Classroom</span></span>
-        <div className="navbar-links">
-          <Link to="/courses"><button>My Courses</button></Link>
-          <Link to="/teacher-classes"><button>My Classes</button></Link>
-          <Link to="/schedule"><button>Schedule Class</button></Link>
-          <button className="btn-logout" onClick={handleLogout}>Logout</button>
-        </div>
-      </nav>
+    <Box sx={{ bgcolor: 'background.default', minHeight: '100vh' }}>
+      {/* AppBar */}
+      <AppBar position="static" color="primary" elevation={2}>
+        <Toolbar>
+          <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: 700 }}>
+            Remote<Typography component="span" variant="h6" color="secondary" sx={{ fontWeight: 700 }}>Classroom</Typography>
+          </Typography>
+          <Button color="inherit" component={RouterLink} to="/courses">My Courses</Button>
+          <Button color="inherit" component={RouterLink} to="/teacher-classes">My Classes</Button>
+          <Button color="inherit" component={RouterLink} to="/schedule">Schedule Class</Button>
+          <Button color="inherit" onClick={handleLogout}>Logout</Button>
+        </Toolbar>
+      </AppBar>
 
-      <div className="page-container">
+      <Box sx={{ maxWidth: 1100, mx: 'auto', p: { xs: 2, md: 4 } }}>
         {/* Header */}
-        <div style={{ background: 'linear-gradient(135deg, #1a1a2e, #16213e)', color: 'white', padding: '28px', borderRadius: '16px', marginBottom: '28px' }}>
-          <h1 style={{ margin: 0, fontSize: '26px' }}>Teacher Dashboard</h1>
-          <p style={{ margin: '6px 0 0 0', opacity: 0.85 }}>Welcome back, {user?.name}</p>
-          <p style={{ margin: '3px 0 0 0', opacity: 0.6, fontSize: '13px' }}>{user?.email} &bull; {user?.college}</p>
-        </div>
+        <Paper elevation={3} sx={{ p: 3, mb: 4, borderRadius: 3, background: 'linear-gradient(130deg, #0d3e6a 0%, #0f4c81 52%, #ff7a18 145%)', color: 'white' }}>
+          <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>Teacher Dashboard</Typography>
+          <Typography variant="subtitle1" sx={{ opacity: 0.85 }}>Welcome back, {user?.name}</Typography>
+          <Typography variant="body2" sx={{ opacity: 0.6 }}>{user?.email} &bull; {user?.college}</Typography>
+        </Paper>
 
         {/* Stat Cards */}
-        <div className="stat-cards">
-          <div className="stat-card">
-            <h2 style={{ color: '#4361ee' }}>{courses.length}</h2>
-            <p>Total Courses</p>
-          </div>
-          <div className="stat-card" style={{ borderTopColor: '#2dc653' }}>
-            <h2 style={{ color: '#2dc653' }}>{classes.length}</h2>
-            <p>Classes Scheduled</p>
-          </div>
-          <div className="stat-card" style={{ borderTopColor: '#f77f00' }}>
-            <h2 style={{ color: '#f77f00' }}>{upcomingClasses.length}</h2>
-            <p>Upcoming Classes</p>
-          </div>
-        </div>
+        <Grid container spacing={3} sx={{ mb: 4 }}>
+          <Grid item xs={12} md={4}>
+            <Card elevation={2} sx={{ borderTop: '5px solid', borderColor: 'primary.main', borderRadius: 2 }}>
+              <CardContent>
+                <Stack direction="row" alignItems="center" spacing={2}>
+                  <SchoolIcon sx={{ color: 'primary.main', fontSize: 40 }} />
+                  <Box>
+                    <Typography variant="h5" sx={{ color: 'primary.main', fontWeight: 700 }}>{courses.length}</Typography>
+                    <Typography variant="body2">Total Courses</Typography>
+                  </Box>
+                </Stack>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <Card elevation={2} sx={{ borderTop: '5px solid', borderColor: 'success.main', borderRadius: 2 }}>
+              <CardContent>
+                <Stack direction="row" alignItems="center" spacing={2}>
+                  <ClassIcon sx={{ color: 'success.main', fontSize: 40 }} />
+                  <Box>
+                    <Typography variant="h5" sx={{ color: 'success.main', fontWeight: 700 }}>{classes.length}</Typography>
+                    <Typography variant="body2">Classes Scheduled</Typography>
+                  </Box>
+                </Stack>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <Card elevation={2} sx={{ borderTop: '5px solid', borderColor: 'warning.main', borderRadius: 2 }}>
+              <CardContent>
+                <Stack direction="row" alignItems="center" spacing={2}>
+                  <EventIcon sx={{ color: 'warning.main', fontSize: 40 }} />
+                  <Box>
+                    <Typography variant="h5" sx={{ color: 'warning.main', fontWeight: 700 }}>{upcomingClasses.length}</Typography>
+                    <Typography variant="body2">Upcoming Classes</Typography>
+                  </Box>
+                </Stack>
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '24px' }}>
+        <Grid container spacing={3} sx={{ mb: 4 }}>
           {/* Upcoming Classes */}
-          <div className="card">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-              <h3 style={{ margin: 0, color: '#1a1a2e' }}>Upcoming Classes</h3>
-              <Link to="/teacher-classes" style={{ color: '#4361ee', fontSize: '14px', fontWeight: 600 }}>View All</Link>
-            </div>
-            {upcomingClasses.length === 0 ? (
-              <p style={{ color: '#888' }}>No upcoming classes scheduled.</p>
-            ) : (
-              upcomingClasses.slice(0, 3).map(cls => (
-                <div key={cls._id} style={{ borderLeft: '4px solid #4361ee', padding: '10px 14px', marginBottom: '10px', background: '#f8f9ff', borderRadius: '6px' }}>
-                  <p style={{ margin: '0 0 4px 0', fontWeight: 600 }}>{cls.title}</p>
-                  <p style={{ margin: '0 0 4px 0', fontSize: '13px', color: '#666' }}>Course: {cls.course?.title}</p>
-                  <p style={{ margin: 0, fontSize: '13px', color: '#4361ee' }}>{new Date(cls.scheduledTime).toLocaleString()}</p>
-                  {cls.meetLink && (
-                    <a href={cls.meetLink} target="_blank" rel="noreferrer" style={{ fontSize: '13px', color: '#2dc653', fontWeight: 600 }}>Join Meet</a>
-                  )}
-                </div>
-              ))
-            )}
-          </div>
+          <Grid item xs={12} md={6}>
+            <Paper elevation={2} sx={{ p: 3, borderRadius: 2 }}>
+              <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
+                <Typography variant="h6" sx={{ color: 'primary.dark', fontWeight: 700 }}>Upcoming Classes</Typography>
+                <Button component={RouterLink} to="/teacher-classes" endIcon={<ArrowForwardIosIcon fontSize="small" />} sx={{ color: 'primary.main', fontWeight: 600, textTransform: 'none' }} size="small">View All</Button>
+              </Stack>
+              {upcomingClasses.length === 0 ? (
+                <Typography color="text.secondary">No upcoming classes scheduled.</Typography>
+              ) : (
+                upcomingClasses.slice(0, 3).map(cls => (
+                  <Paper key={cls._id} elevation={0} sx={{ borderLeft: '4px solid', borderColor: 'primary.main', p: 2, mb: 2, bgcolor: '#f8f9ff', borderRadius: 1 }}>
+                    <Typography sx={{ fontWeight: 600 }}>{cls.title}</Typography>
+                    <Typography variant="body2" color="text.secondary">Course: {cls.course?.title}</Typography>
+                    <Typography variant="body2" sx={{ color: 'primary.main' }}>{new Date(cls.scheduledTime).toLocaleString()}</Typography>
+                    {cls.meetLink && (
+                        <Button href={cls.meetLink} target="_blank" rel="noreferrer" size="small" startIcon={<MeetingRoomIcon />} sx={{ color: 'success.main', fontWeight: 600, textTransform: 'none', mt: 1 }}>
+                        Join Meet
+                      </Button>
+                    )}
+                  </Paper>
+                ))
+              )}
+            </Paper>
+          </Grid>
 
           {/* My Courses */}
-          <div className="card">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-              <h3 style={{ margin: 0, color: '#1a1a2e' }}>My Courses</h3>
-              <Link to="/courses" style={{ color: '#4361ee', fontSize: '14px', fontWeight: 600 }}>View All</Link>
-            </div>
-            {courses.length === 0 ? (
-              <p style={{ color: '#888' }}>No courses yet.</p>
-            ) : (
-              courses.slice(0, 4).map(course => (
-                <div key={course._id} style={{ padding: '10px', marginBottom: '8px', background: '#f0f2f5', borderRadius: '8px' }}>
-                  <p style={{ margin: '0 0 4px 0', fontWeight: 600 }}>{course.title}</p>
-                  <p style={{ margin: 0, fontSize: '13px', color: '#666' }}>{course.description?.slice(0, 60)}...</p>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
+          <Grid item xs={12} md={6}>
+            <Paper elevation={2} sx={{ p: 3, borderRadius: 2 }}>
+              <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
+                <Typography variant="h6" sx={{ color: 'primary.dark', fontWeight: 700 }}>My Courses</Typography>
+                <Button component={RouterLink} to="/courses" endIcon={<ArrowForwardIosIcon fontSize="small" />} sx={{ color: 'primary.main', fontWeight: 600, textTransform: 'none' }} size="small">View All</Button>
+              </Stack>
+              {courses.length === 0 ? (
+                <Typography color="text.secondary">No courses yet.</Typography>
+              ) : (
+                courses.slice(0, 4).map(course => (
+                  <Paper key={course._id} elevation={0} sx={{ p: 2, mb: 2, bgcolor: '#f0f2f5', borderRadius: 1 }}>
+                    <Typography sx={{ fontWeight: 600 }}>{course.title}</Typography>
+                    <Typography variant="body2" color="text.secondary">{course.description?.slice(0, 60)}...</Typography>
+                  </Paper>
+                ))
+              )}
+            </Paper>
+          </Grid>
+        </Grid>
 
         {/* Quick Actions */}
-        <div className="card">
-          <h3 style={{ margin: '0 0 16px 0', color: '#1a1a2e' }}>Quick Actions</h3>
-          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-            <Link to="/schedule"><button className="btn btn-blue">+ Schedule Class</button></Link>
-            <Link to="/courses"><button className="btn btn-green">My Courses</button></Link>
-            <Link to="/teacher-classes"><button className="btn btn-orange">View All Classes</button></Link>
-          </div>
-        </div>
-      </div>
-    </div>
+        <Paper elevation={2} sx={{ p: 3, borderRadius: 2 }}>
+          <Typography variant="h6" sx={{ color: 'primary.dark', fontWeight: 700, mb: 2 }}>Quick Actions</Typography>
+          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+            <Button component={RouterLink} to="/schedule" variant="contained" color="primary" sx={{ fontWeight: 600, textTransform: 'none' }}>+ Schedule Class</Button>
+            <Button component={RouterLink} to="/courses" variant="contained" color="success" sx={{ fontWeight: 600, textTransform: 'none' }}>My Courses</Button>
+            <Button component={RouterLink} to="/teacher-classes" variant="contained" color="warning" sx={{ fontWeight: 600, textTransform: 'none' }}>View All Classes</Button>
+          </Stack>
+        </Paper>
+      </Box>
+    </Box>
   );
 }
