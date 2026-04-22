@@ -12,7 +12,7 @@ exports.getAssignments = async (req, res) => {
   }
 };
 
-// Create an assignment (Teacher)
+// Create an assignment (Teacher or Admin)
 exports.createAssignment = async (req, res) => {
   try {
     const { course_id, title, description, deadline } = req.body;
@@ -24,7 +24,19 @@ exports.createAssignment = async (req, res) => {
   }
 };
 
-// Submit assignment (Student)
+// Delete an assignment (Teacher or Admin)
+exports.deleteAssignment = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const assignment = await Assignment.findByIdAndDelete(id);
+    if (!assignment) return res.status(404).json({ message: 'Assignment not found' });
+    res.json({ message: 'Assignment deleted successfully' });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', err });
+  }
+};
+
+// Submit assignment (Student or Admin)
 exports.submitAssignment = async (req, res) => {
   try {
     const { id } = req.params;
@@ -46,12 +58,12 @@ exports.submitAssignment = async (req, res) => {
   }
 };
 
-// Get submissions for an assignment (Teacher)
+// Get submissions for an assignment (Teacher or Admin)
 exports.getSubmissions = async (req, res) => {
   try {
     const { id } = req.params;
     const assignment = await Assignment.findById(id);
-    if (!assignment) return res.status(404).json({ message: 'Not found' });
+    if (!assignment) return res.status(404).json({ message: 'Assignment not found' });
     res.json(assignment.submissions);
   } catch (err) {
     res.status(500).json({ message: 'Server error', err });
