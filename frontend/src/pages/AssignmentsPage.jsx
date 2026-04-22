@@ -10,7 +10,7 @@ const AssignmentsPage = () => {
   const [courses, setCourses] = useState([]);
   const token = localStorage.getItem('token');
   const user = JSON.parse(localStorage.getItem('user') || '{}');
-  const isTeacher = user.role === 'teacher';
+    const isTeacher = user.role === 'teacher' || user.role === 'admin';
 
   const fetchAssignments = async () => {
     try {
