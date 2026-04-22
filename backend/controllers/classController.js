@@ -1,5 +1,6 @@
 const ClassSession = require('../models/ClassSession');
 
+// Create a class session (Teacher or Admin)
 exports.createClassSession = async (req, res) => {
   try {
     const { course, teacher, title, scheduledTime, duration, meetingLink } = req.body;
@@ -24,6 +25,7 @@ exports.createClassSession = async (req, res) => {
   }
 };
 
+// Get all class sessions (All authenticated users)
 exports.getAllClassSessions = async (req, res) => {
   try {
     const classes = await ClassSession.find()
@@ -35,6 +37,7 @@ exports.getAllClassSessions = async (req, res) => {
   }
 };
 
+// Update a class session (Teacher or Admin)
 exports.updateClassSession = async (req, res) => {
   try {
     const { id } = req.params;
@@ -46,11 +49,20 @@ exports.updateClassSession = async (req, res) => {
       { new: true }
     ).populate('course', 'title').populate('teacher', 'name email');
 
-    if (!updatedClass) {
-      return res.status(404).json({ message: 'Class not found' });
-    }
-
+    if (!updatedClass) return res.status(404).json({ message: 'Class session not found' });
     res.json(updatedClass);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error });
+  }
+};
+
+// Delete a class session (Teacher or Admin)
+exports.deleteClassSession = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deleted = await ClassSession.findByIdAndDelete(id);
+    if (!deleted) return res.status(404).json({ message: 'Class session not found' });
+    res.json({ message: 'Class session deleted successfully' });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error });
   }
