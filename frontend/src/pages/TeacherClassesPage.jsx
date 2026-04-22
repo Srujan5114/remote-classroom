@@ -105,7 +105,7 @@ export default function TeacherClassesPage() {
   };
 
   return (
-    <Box sx={{ bgcolor: '#f5f6fa', minHeight: '100vh' }}>
+    <Box sx={{ bgcolor: 'background.default', minHeight: '100vh' }}>
       {/* AppBar */}
       <AppBar position="static" color="primary" elevation={2}>
         <Toolbar>
@@ -144,8 +144,8 @@ export default function TeacherClassesPage() {
                 key={cls._id}
                 elevation={2}
                 sx={{
-                  border: liveClass === cls._id ? '2px solid #2dc653' : '1px solid #e9ecef',
-                  bgcolor: liveClass === cls._id ? '#f0fff4' : 'white',
+                  border: liveClass === cls._id ? '2px solid #34d399' : '1px solid rgba(94, 182, 230, 0.2)',
+                  bgcolor: liveClass === cls._id ? 'rgba(52, 211, 153, 0.12)' : 'background.paper',
                   p: 2
                 }}
               >
@@ -209,14 +209,14 @@ export default function TeacherClassesPage() {
                   <Stack direction={{ xs: 'column', sm: 'row' }} justifyContent="space-between" alignItems={{ xs: 'flex-start', sm: 'center' }} spacing={2}>
                     <Box flex={1}>
                       <Stack direction="row" alignItems="center" spacing={1} mb={1}>
-                        <Typography variant="h6" sx={{ color: '#1a1a2e', mb: 0 }}>{cls.title}</Typography>
+                        <Typography variant="h6" sx={{ color: 'text.primary', mb: 0 }}>{cls.title}</Typography>
                         <Chip label={liveClass === cls._id ? 'LIVE' : 'Scheduled'} color={liveClass === cls._id ? 'success' : 'warning'} size="small" />
                       </Stack>
                       <Typography variant="body2" color="text.secondary"><strong>Course:</strong> {cls.course?.title}</Typography>
                       <Typography variant="body2" color="text.secondary"><strong>Time:</strong> {new Date(cls.scheduledTime).toLocaleString()}</Typography>
                       <Typography variant="body2" color="text.secondary"><strong>Duration:</strong> {cls.duration} minutes</Typography>
                       {cls.meetingLink && (
-                        <Typography variant="body2" color="primary.main"><strong>Meeting Link:</strong> <a href={cls.meetingLink} target="_blank" rel="noopener noreferrer" style={{ color: '#4361ee' }}>{cls.meetingLink}</a></Typography>
+                        <Typography variant="body2" color="primary.main"><strong>Meeting Link:</strong> <a href={cls.meetingLink} target="_blank" rel="noopener noreferrer" style={{ color: '#7fcdf3' }}>{cls.meetingLink}</a></Typography>
                       )}
                     </Box>
                     <Stack spacing={1} direction="column" alignItems="flex-end">

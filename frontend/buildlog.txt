@@ -1,0 +1,51 @@
+
+> frontend@0.1.0 build
+> react-scripts build
+
+Creating an optimized production build...
+Compiled with warnings.
+
+[eslint] 
+src\pages\AssignmentsPage.jsx
+  Line 42:6:  React Hook useEffect has missing dependencies: 'fetchAssignments', 'fetchCourses', and 'isTeacher'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+src\pages\ChatPage.jsx
+  Line 91:6:  React Hook useEffect has a missing dependency: 'fetchMessages'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src\pages\LoginPage.jsx
+  Line 7:8:  'LockOutlinedIcon' is defined but never used  no-unused-vars
+
+src\pages\MaterialsPage.jsx
+  Line 38:42:  React Hook useEffect has a missing dependency: 'fetchMaterials'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src\pages\NotificationsPage.jsx
+  Line 22:46:  React Hook useEffect has a missing dependency: 'fetchNotifications'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src\pages\ScheduleClassPage.jsx
+  Line 8:8:  'SchoolIcon' is defined but never used  no-unused-vars
+
+src\pages\StudentDashboard.jsx
+  Line 5:84:  'Chip' is defined but never used  no-unused-vars
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+File sizes after gzip:
+
+  196.48 kB  build\static\js\main.16e366d3.js
+  1.76 kB    build\static\js\453.825386d9.chunk.js
+  287 B      build\static\css\main.7881a2a0.css
+
+The project was built assuming it is hosted at /.
+You can control this with the homepage field in your package.json.
+
+The build folder is ready to be deployed.
+You may serve it with a static server:
+
+  npm install -g serve
+  serve -s build
+
+Find out more about deployment here:
+
+  https://cra.link/deployment
+

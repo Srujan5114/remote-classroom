@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { getCourses, getClasses, getStudentAttendance } from '../services/api';
 import {
-  Box, AppBar, Toolbar, Typography, Button, Paper, Grid, Card, CardContent, Stack, Chip, Avatar
+  Box, AppBar, Toolbar, Typography, Button, Paper, Grid, Card, CardContent, Stack, Avatar
 } from '@mui/material';
 import SchoolIcon from '@mui/icons-material/School';
 import EventIcon from '@mui/icons-material/Event';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 export default function StudentDashboard() {
   const [courses, setCourses] = useState([]);
@@ -61,6 +62,7 @@ export default function StudentDashboard() {
           <Box sx={{ display: 'flex', gap: 2 }}>
             <Button color="inherit" component={Link} to="/student-classes">My Classes</Button>
             <Button color="inherit" component={Link} to="/courses">Courses</Button>
+            <Button color="inherit" component={Link} to="/profile">Edit Profile</Button>
             <Button color="error" variant="outlined" onClick={handleLogout}>Logout</Button>
           </Box>
         </Toolbar>
@@ -70,8 +72,8 @@ export default function StudentDashboard() {
         {/* Header Banner */}
         <Paper sx={{ background: 'linear-gradient(130deg, #0d3e6a 0%, #0f4c81 54%, #ff7a18 140%)', color: 'white', p: 4, borderRadius: 3, mb: 4 }}>
           <Stack direction="row" spacing={3} alignItems="center">
-            <Avatar sx={{ bgcolor: 'secondary.main', width: 56, height: 56, fontSize: 28 }}>
-              {user?.name?.charAt(0)}
+            <Avatar sx={{ bgcolor: 'secondary.light', width: 56, height: 56 }}>
+              <AccountCircleIcon sx={{ fontSize: 30 }} />
             </Avatar>
             <Box>
               <Typography variant="h5" fontWeight={700}>Welcome back, {user?.name}</Typography>
@@ -142,7 +144,7 @@ export default function StudentDashboard() {
                 ) : (
                   <Stack spacing={2}>
                     {upcomingClasses.map(cls => (
-                      <Paper key={cls._id} sx={{ borderLeft: '4px solid', borderColor: 'primary.main', p: 2, bgcolor: '#f8f9ff' }}>
+                      <Paper key={cls._id} sx={{ borderLeft: '4px solid', borderColor: 'primary.main', p: 2, bgcolor: 'rgba(17, 28, 42, 0.78)' }}>
                         <Typography fontWeight={600}>{cls.title}</Typography>
                         <Typography color="text.secondary" fontSize={13}>
                           {new Date(cls.scheduledTime).toLocaleString()}
@@ -164,7 +166,7 @@ export default function StudentDashboard() {
                 ) : (
                   <Stack spacing={2}>
                     {courses.map(course => (
-                      <Paper key={course._id} sx={{ borderLeft: '4px solid', borderColor: 'primary.main', p: 2, bgcolor: '#f8f9ff' }}>
+                      <Paper key={course._id} sx={{ borderLeft: '4px solid', borderColor: 'primary.main', p: 2, bgcolor: 'rgba(17, 28, 42, 0.78)' }}>
                         <Typography fontWeight={600}>{course.title}</Typography>
                         <Typography color="text.secondary" fontSize={13}>
                           {course.description || 'No description'}

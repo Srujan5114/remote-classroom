@@ -14,7 +14,10 @@ api.interceptors.request.use((config) => {
 
 export const loginUser = (data) => api.post('/auth/login', data);
 export const registerUser = (data) => api.post('/auth/register', data);
+export const getMyProfile = () => api.get('/auth/me');
+export const updateMyProfile = (data) => api.put('/auth/me', data);
 export const getCourses = () => api.get('/courses');
+export const getAssignments = () => api.get('/assignments');
 export const createCourse = (data) => api.post('/courses', data);
 export const updateCourse = (id, data) => api.put(`/courses/${id}`, data);
 export const deleteCourse = (id) => api.delete(`/courses/${id}`);

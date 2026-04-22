@@ -65,7 +65,7 @@ export default function StudentClassesPage() {
   const past = classes.filter(c => new Date(c.scheduledTime) <= now);
 
   return (
-    <Box sx={{ bgcolor: '#f5f6fa', minHeight: '100vh' }}>
+    <Box sx={{ bgcolor: 'background.default', minHeight: '100vh' }}>
       {/* AppBar */}
       <AppBar position="static" color="primary" elevation={2}>
         <Toolbar>
@@ -82,7 +82,7 @@ export default function StudentClassesPage() {
         <Typography variant="h4" sx={{ fontWeight: 700, mb: 3, mt: 1 }}>My Classes</Typography>
 
         {/* Upcoming Classes */}
-        <Typography variant="h6" sx={{ color: '#1a1a2e', mb: 2 }}>Upcoming Classes</Typography>
+        <Typography variant="h6" sx={{ color: 'text.primary', mb: 2 }}>Upcoming Classes</Typography>
         {upcoming.length === 0 ? (
           <Paper elevation={1} sx={{ mb: 3, textAlign: 'center', p: 4 }}>
             <Typography color="text.secondary">No upcoming classes.</Typography>
@@ -92,7 +92,7 @@ export default function StudentClassesPage() {
             {upcoming.map(cls => (
               <Paper key={cls._id} elevation={2} sx={{ borderLeft: '4px solid #4361ee', p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Box>
-                  <Typography variant="h6" sx={{ color: '#1a1a2e', mb: 0.5 }}>{cls.title}</Typography>
+                  <Typography variant="h6" sx={{ color: 'text.primary', mb: 0.5 }}>{cls.title}</Typography>
                   <Typography variant="body2" color="text.secondary"><SchoolIcon sx={{ fontSize: 16, mr: 0.5 }} />Course: {cls.course?.title}</Typography>
                   <Typography variant="body2" color="text.secondary"><EventIcon sx={{ fontSize: 16, mr: 0.5 }} />Time: {new Date(cls.scheduledTime).toLocaleString()}</Typography>
                   <Typography variant="body2" color="text.secondary">Duration: {cls.duration} minutes</Typography>
@@ -118,7 +118,7 @@ export default function StudentClassesPage() {
         )}
 
         {/* Past Classes */}
-        <Typography variant="h6" sx={{ color: '#1a1a2e', mt: 4, mb: 2 }}>Past Classes</Typography>
+        <Typography variant="h6" sx={{ color: 'text.primary', mt: 4, mb: 2 }}>Past Classes</Typography>
         {past.length === 0 ? (
           <Paper elevation={1} sx={{ textAlign: 'center', p: 4 }}>
             <Typography color="text.secondary">No past classes.</Typography>
@@ -129,7 +129,7 @@ export default function StudentClassesPage() {
               <Paper key={cls._id} elevation={1} sx={{ mb: 2, borderLeft: '4px solid #adb5bd', p: 2 }}>
                 <Box display="flex" justifyContent="space-between" alignItems="center">
                   <Box>
-                    <Typography variant="h6" sx={{ color: '#666', mb: 0.5 }}>{cls.title}</Typography>
+                    <Typography variant="h6" sx={{ color: 'text.secondary', mb: 0.5 }}>{cls.title}</Typography>
                     <Typography variant="body2" color="text.secondary"><strong>Course:</strong> {cls.course?.title}</Typography>
                     <Typography variant="body2" color="text.secondary"><strong>Time:</strong> {new Date(cls.scheduledTime).toLocaleString()}</Typography>
                   </Box>

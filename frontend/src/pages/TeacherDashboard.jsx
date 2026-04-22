@@ -60,6 +60,7 @@ export default function TeacherDashboard() {
           <Button color="inherit" component={RouterLink} to="/courses">My Courses</Button>
           <Button color="inherit" component={RouterLink} to="/teacher-classes">My Classes</Button>
           <Button color="inherit" component={RouterLink} to="/schedule">Schedule Class</Button>
+          <Button color="inherit" component={RouterLink} to="/profile">Edit Profile</Button>
           <Button color="inherit" onClick={handleLogout}>Logout</Button>
         </Toolbar>
       </AppBar>
@@ -127,7 +128,7 @@ export default function TeacherDashboard() {
                 <Typography color="text.secondary">No upcoming classes scheduled.</Typography>
               ) : (
                 upcomingClasses.slice(0, 3).map(cls => (
-                  <Paper key={cls._id} elevation={0} sx={{ borderLeft: '4px solid', borderColor: 'primary.main', p: 2, mb: 2, bgcolor: '#f8f9ff', borderRadius: 1 }}>
+                  <Paper key={cls._id} elevation={0} sx={{ borderLeft: '4px solid', borderColor: 'primary.main', p: 2, mb: 2, bgcolor: 'rgba(17, 28, 42, 0.78)', borderRadius: 1 }}>
                     <Typography sx={{ fontWeight: 600 }}>{cls.title}</Typography>
                     <Typography variant="body2" color="text.secondary">Course: {cls.course?.title}</Typography>
                     <Typography variant="body2" sx={{ color: 'primary.main' }}>{new Date(cls.scheduledTime).toLocaleString()}</Typography>
@@ -153,7 +154,7 @@ export default function TeacherDashboard() {
                 <Typography color="text.secondary">No courses yet.</Typography>
               ) : (
                 courses.slice(0, 4).map(course => (
-                  <Paper key={course._id} elevation={0} sx={{ p: 2, mb: 2, bgcolor: '#f0f2f5', borderRadius: 1 }}>
+                  <Paper key={course._id} elevation={0} sx={{ p: 2, mb: 2, bgcolor: 'rgba(17, 28, 42, 0.78)', borderRadius: 1 }}>
                     <Typography sx={{ fontWeight: 600 }}>{course.title}</Typography>
                     <Typography variant="body2" color="text.secondary">{course.description?.slice(0, 60)}...</Typography>
                   </Paper>

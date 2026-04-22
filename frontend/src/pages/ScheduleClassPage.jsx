@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import axios from 'axios';
-import { createClass } from '../services/api';
+import { createClass, getCourses } from '../services/api';
 import {
   Box, AppBar, Toolbar, Typography, Button, Paper, TextField, MenuItem, CircularProgress, Stack, Alert
 } from '@mui/material';
 import EventIcon from '@mui/icons-material/Event';
-import SchoolIcon from '@mui/icons-material/School';
 
 export default function ScheduleClassPage() {
   const [courses, setCourses] = useState([]);
@@ -18,6 +16,7 @@ export default function ScheduleClassPage() {
     meetingLink: ''
   });
   const [loading, setLoading] = useState(false);
+  const [coursesLoading, setCoursesLoading] = useState(true);
   const [success, setSuccess] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
@@ -29,11 +28,14 @@ export default function ScheduleClassPage() {
 
   useEffect(() => {
     const fetchCourses = async () => {
+      setCoursesLoading(true);
       try {
-        const res = await axios.get('http://localhost:5000/api/courses');
+        const res = await getCourses();
         setCourses(res.data);
       } catch (err) {
-        // Optionally handle error
+        setError(err.response?.data?.message || 'Failed to load courses. Please sign in again.');
+      } finally {
+        setCoursesLoading(false);
       }
     };
     fetchCourses();
@@ -83,7 +85,7 @@ export default function ScheduleClassPage() {
 
       <Box sx={{ maxWidth: 600, mx: 'auto', p: { xs: 2, md: 4 } }}>
         <Typography variant="h4" fontWeight={700} mb={3} color="primary.dark">Schedule a Class</Typography>
-        <Paper sx={{ p: 4, borderRadius: 3, background: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(5px)' }}>
+        <Paper sx={{ p: 4, borderRadius: 3, background: 'rgba(18,27,40,0.88)', backdropFilter: 'blur(8px)' }}>
           <Stack spacing={2}>
             {success && <Alert severity="success">{success}</Alert>}
             {error && <Alert severity="error">{error}</Alert>}
@@ -96,7 +98,9 @@ export default function ScheduleClassPage() {
                   value={form.course}
                   onChange={handleChange}
                   required
+                  disabled={coursesLoading || courses.length === 0}
                   fullWidth
+                  helperText={coursesLoading ? 'Loading courses...' : courses.length === 0 ? 'No courses available to schedule.' : ''}
                 >
                   <MenuItem value="">Select a course</MenuItem>
                   {courses.map(c => (

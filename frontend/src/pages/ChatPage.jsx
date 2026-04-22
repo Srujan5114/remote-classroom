@@ -7,6 +7,7 @@ import {
 import ChatIcon from '@mui/icons-material/Chat';
 import SendIcon from '@mui/icons-material/Send';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 const SOCKET_URL = 'http://localhost:5000';
 
@@ -130,7 +131,7 @@ const ChatPage = () => {
       {/* Sidebar */}
       <Box sx={{
         width: 280,
-        bgcolor: 'rgba(255,255,255,0.82)',
+        bgcolor: 'rgba(15,24,37,0.88)',
         backdropFilter: 'blur(6px)',
         borderRight: 1,
         borderColor: 'divider',
@@ -159,7 +160,9 @@ const ChatPage = () => {
                   onClick={() => setSelectedCourse(course)}
                 >
                   <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2, py: 1.5 }}>
-                    <Avatar sx={{ bgcolor: 'primary.main' }}>{course.name?.charAt(0)}</Avatar>
+                    <Avatar sx={{ bgcolor: 'primary.main' }}>
+                      <AccountCircleIcon />
+                    </Avatar>
                     <Box>
                       <Typography fontWeight={600} fontSize={15}>{course.name}</Typography>
                       <Typography color="text.secondary" fontSize={12}>{course.code || 'Course Chat'}</Typography>
@@ -192,8 +195,10 @@ const ChatPage = () => {
           </Box>
         ) : (
           <>
-            <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider', display: 'flex', alignItems: 'center', gap: 2, bgcolor: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(4px)' }}>
-              <Avatar sx={{ bgcolor: 'secondary.main', width: 40, height: 40 }}>{selectedCourse.name?.charAt(0)}</Avatar>
+            <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider', display: 'flex', alignItems: 'center', gap: 2, bgcolor: 'rgba(15,24,37,0.92)', backdropFilter: 'blur(4px)' }}>
+              <Avatar sx={{ bgcolor: 'secondary.main', width: 40, height: 40 }}>
+                <AccountCircleIcon fontSize="small" />
+              </Avatar>
               <Box>
                 <Typography fontWeight={700}>{selectedCourse.name}</Typography>
                 <Typography color="text.secondary" fontSize={13}>Group Chat</Typography>
@@ -221,7 +226,7 @@ const ChatPage = () => {
                     >
                       {!isOwn && (
                         <Avatar sx={{ bgcolor: 'error.light', width: 32, height: 32 }}>
-                          {(senderName || 'U').charAt(0).toUpperCase()}
+                          <AccountCircleIcon sx={{ fontSize: 18 }} />
                         </Avatar>
                       )}
                       <Box sx={{ maxWidth: '65%' }}>
@@ -236,7 +241,7 @@ const ChatPage = () => {
                             p: 1.5,
                             borderRadius: isOwn ? '16px 16px 4px 16px' : '16px 16px 16px 4px',
                             bgcolor: isOwn ? 'primary.main' : 'background.paper',
-                            color: isOwn ? '#fff' : 'text.primary'
+                            color: isOwn ? '#062033' : 'text.primary'
                           }}
                         >
                           <Typography fontSize={15} sx={{ m: 0 }}>{msg.message || msg.content}</Typography>

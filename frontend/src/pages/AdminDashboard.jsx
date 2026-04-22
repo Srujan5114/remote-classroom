@@ -43,7 +43,7 @@ export default function AdminDashboard() {
   };
 
   return (
-    <Box sx={{ bgcolor: '#f5f6fa', minHeight: '100vh' }}>
+    <Box sx={{ bgcolor: 'background.default', minHeight: '100vh' }}>
       <AppBar position="static" color="primary" elevation={2}>
         <Toolbar>
           <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: 700 }}>
@@ -120,8 +120,8 @@ export default function AdminDashboard() {
             </Card>
           </Grid>
         </Grid>
-        <Paper elevation={2} sx={{ p: 3, borderRadius: 2, mt: 4, background: 'linear-gradient(180deg, #ffffff 0%, #f6f9fe 100%)' }}>
-          <Typography variant="h6" sx={{ color: '#0c2b52', fontWeight: 800, mb: 1.5 }}>Management Center</Typography>
+        <Paper elevation={2} sx={{ p: 3, borderRadius: 2, mt: 4, background: 'linear-gradient(180deg, rgba(20, 30, 45, 0.95) 0%, rgba(14, 22, 34, 0.95) 100%)' }}>
+          <Typography variant="h6" sx={{ color: 'primary.light', fontWeight: 800, mb: 1.5 }}>Management Center</Typography>
           <Typography color="text.secondary">Use this area to expand admin tools such as user approvals, course moderation, and class monitoring.</Typography>
         </Paper>
       </Box>

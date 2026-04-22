@@ -240,7 +240,7 @@ export default function CoursesPage() {
         </Dialog>
 
         {courses.length === 0 ? (
-          <Paper sx={{ textAlign: 'center', p: 6, mt: 4 }}>
+          <Paper sx={{ textAlign: 'center', p: 6, mt: 4, bgcolor: 'rgba(18,27,40,0.9)' }}>
             <Typography color="text.secondary" fontSize={16}>
               No courses available yet.
             </Typography>
@@ -270,7 +270,7 @@ export default function CoursesPage() {
                     borderRadius: 2,
                     height: '100%',
                     background:
-                      'linear-gradient(180deg, #ffffff 0%, #f5f9ff 100%)',
+                      'linear-gradient(180deg, rgba(20,30,45,0.96) 0%, rgba(13,22,34,0.96) 100%)',
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'space-between',
@@ -312,7 +312,8 @@ export default function CoursesPage() {
                     >
                       <Button
                         size="small"
-                        variant="outlined"
+                        variant="contained"
+                        color="primary"
                         onClick={() => handleEdit(course)}
                       >
                         Edit
