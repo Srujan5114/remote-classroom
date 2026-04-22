@@ -17,7 +17,8 @@ export default function DashboardPage() {
     navigate('/');
   };
 
-  const isTeacher = user?.role === 'teacher';
+    const isTeacher = user?.role === 'teacher' || user?.role === 'admin';
+  const isAdmin = user?.role === 'admin';
 
   const teacherLinks = [
     { path: '/teacher-dashboard', label: 'Teacher Dashboard', icon: '🏫', desc: 'Manage your classroom' },
@@ -40,7 +41,18 @@ export default function DashboardPage() {
     { path: '/notifications', label: 'Notifications', icon: '🔔', desc: 'View your notifications' },
   ];
 
-  const links = isTeacher ? teacherLinks : studentLinks;
+  const adminLinks = [
+    { path: '/admin-dashboard', label: 'Admin Dashboard', icon: '🛡️', desc: 'Full system overview' },
+    { path: '/courses', label: 'Manage Courses', icon: '📚', desc: 'Add, edit, delete courses' },
+    { path: '/assignments', label: 'Manage Assignments', icon: '📝', desc: 'Create and delete assignments' },
+    { path: '/materials', label: 'Manage Materials', icon: '📁', desc: 'Upload and delete materials' },
+    { path: '/schedule-class', label: 'Schedule Class', icon: '🗓️', desc: 'Create and delete class sessions' },
+    { path: '/teacher-classes', label: 'All Classes', icon: '📅', desc: 'View all class sessions' },
+    { path: '/chat', label: 'Class Chat', icon: '💬', desc: 'Chat with all users' },
+    { path: '/notifications', label: 'Notifications', icon: '🔔', desc: 'View and send notifications' },
+  ];
+
+    const links = isAdmin ? adminLinks : (isTeacher ? teacherLinks : studentLinks);
 
   return (
     <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #0f0c29, #302b63, #24243e)', fontFamily: 'Segoe UI, sans-serif', color: '#fff' }}>
